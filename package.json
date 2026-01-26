@@ -1,22 +1,6 @@
 {
   "name": "game-hub",
   "version": "1.0.0",
-  "description": "A game hub hosting multiple educational games for children aged 8-12",
-  "main": "index.html",
-  "scripts": {
-    "dev": "python3 server.py",
-    "start": "python3 server.py"
-  },
-  "keywords": [
-    "games",
-    "educational",
-    "children",
-    "html5"
-  ],
-  "author": "",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": ""
-  }
+  "private": true,
+  "description": "Educational games for children aged 8-12"
 }
