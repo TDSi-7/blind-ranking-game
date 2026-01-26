@@ -1,0 +1,15 @@
+{
+  "games": [
+    {
+      "id": "blind-ranking",
+      "name": "Blind Ranking Numbers",
+      "folder": "blind-ranking",
+      "description": "Place numbers in order without seeing them! Can you fill all 10 slots?",
+      "icon": "🔢",
+      "difficultyLevels": ["Easy", "Medium", "Hard"],
+      "ageRange": "8-12",
+      "color": "#2196F3",
+      "featured": true
+    }
+  ]
+}

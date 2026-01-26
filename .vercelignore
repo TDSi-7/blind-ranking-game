@@ -1,0 +1,17 @@
+# Local development server files
+server.py
+start-server.sh
+
+# Development files
+*.log
+.DS_Store
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Git files (already handled by Vercel)
+.git/
+.gitignore

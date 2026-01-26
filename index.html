@@ -3,174 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blind Ranking Numbers Game</title>
+    <title>Fun Games Hub</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <!-- Start Screen -->
-        <div id="startScreen" class="screen active">
-            <h1>Blind Ranking Numbers</h1>
-            <p class="subtitle">Place numbers in order without seeing them!</p>
-            <div class="start-form">
-                <div class="form-group">
-                    <label for="playerName">Enter your first name:</label>
-                    <input type="text" id="playerName" placeholder="Your name" maxlength="20">
-                </div>
-                <div class="form-group">
-                    <label>Choose difficulty:</label>
-                    <div class="difficulty-buttons">
-                        <button class="btn btn-difficulty" data-difficulty="easy">Easy<br><span class="difficulty-range">1-100</span></button>
-                        <button class="btn btn-difficulty" data-difficulty="medium">Medium<br><span class="difficulty-range">1-250</span></button>
-                        <button class="btn btn-difficulty" data-difficulty="hard">Hard<br><span class="difficulty-range">1-500</span></button>
-                    </div>
-                </div>
-                <div class="form-group difficulty-stats-wrapper">
-                    <label>Difficulty High Scores:</label>
-                    <div class="difficulty-stats">
-                        <div class="difficulty-stat">
-                            <span class="difficulty-name">Easy</span>
-                            <span class="difficulty-high-score">Best: <span id="easyHighScore">-</span></span>
-                            <span class="difficulty-perfects">10/10s: <span id="easyPerfects">0</span></span>
-                        </div>
-                        <div class="difficulty-stat">
-                            <span class="difficulty-name">Medium</span>
-                            <span class="difficulty-high-score">Best: <span id="mediumHighScore">-</span></span>
-                            <span class="difficulty-perfects">10/10s: <span id="mediumPerfects">0</span></span>
-                        </div>
-                        <div class="difficulty-stat">
-                            <span class="difficulty-name">Hard</span>
-                            <span class="difficulty-high-score">Best: <span id="hardHighScore">-</span></span>
-                            <span class="difficulty-perfects">10/10s: <span id="hardPerfects">0</span></span>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group start-button-group">
-                    <button id="startBtn" class="btn btn-start" disabled>Start Game</button>
-                </div>
-            </div>
-            <div class="instructions">
-                <h3 class="instructions-title">How to Play</h3>
-                <ul class="instructions-list">
-                    <li><span class="bullet-label">1.</span> You'll receive random numbers based on your chosen difficulty.</li>
-                    <li><span class="bullet-label">2.</span> Place each number into one of the 10 slots so that the numbers end up in ascending order.</li>
-                    <li><span class="bullet-label">3.</span> You can't move numbers once placed, so think carefully before you click a slot.</li>
-                    <li><span class="bullet-label">4.</span> If a new number can't fit into any slot without breaking the order, the game ends.</li>
-                    <li><span class="bullet-label">5.</span> Fill all 10 slots correctly to get a perfect <strong>10/10</strong> score!</li>
-                </ul>
-            </div>
+    <div class="home-container">
+        <header class="home-header">
+            <h1>🎮 Fun Games Hub 🎮</h1>
+            <p class="home-subtitle">Choose a game to play!</p>
+        </header>
+        
+        <div id="loadingMessage" class="loading-message">
+            <p>Loading games...</p>
         </div>
-
-        <!-- Game Screen -->
-        <div id="gameScreen" class="screen">
-            <div class="game-header">
-                <div class="game-header-left">
-                    <h2 id="gameTitle">Blind Ranking Numbers</h2>
-                    <div class="best-badge">Best: <span id="highScore">-</span></div>
-                </div>
-                <div id="difficultyBadge" class="difficulty-badge"></div>
-            </div>
-            <div class="game-info">
-                <div class="current-number-display">
-                    <p class="label">Current Number:</p>
-                    <div id="currentNumber" class="number-display">-</div>
-                </div>
-                <div class="numbers-placed">
-                    <p class="numbers-placed-label">Numbers Placed</p>
-                    <div class="numbers-placed-counter"><span id="numbersPlaced">0</span>/10</div>
-                </div>
-            </div>
-
-            <div class="slots-container">
-                <div class="slot" data-slot="1">
-                    <div class="slot-number">1</div>
-                    <div class="slot-content" data-slot="1"></div>
-                </div>
-                <div class="slot" data-slot="2">
-                    <div class="slot-number">2</div>
-                    <div class="slot-content" data-slot="2"></div>
-                </div>
-                <div class="slot" data-slot="3">
-                    <div class="slot-number">3</div>
-                    <div class="slot-content" data-slot="3"></div>
-                </div>
-                <div class="slot" data-slot="4">
-                    <div class="slot-number">4</div>
-                    <div class="slot-content" data-slot="4"></div>
-                </div>
-                <div class="slot" data-slot="5">
-                    <div class="slot-number">5</div>
-                    <div class="slot-content" data-slot="5"></div>
-                </div>
-                <div class="slot" data-slot="6">
-                    <div class="slot-number">6</div>
-                    <div class="slot-content" data-slot="6"></div>
-                </div>
-                <div class="slot" data-slot="7">
-                    <div class="slot-number">7</div>
-                    <div class="slot-content" data-slot="7"></div>
-                </div>
-                <div class="slot" data-slot="8">
-                    <div class="slot-number">8</div>
-                    <div class="slot-content" data-slot="8"></div>
-                </div>
-                <div class="slot" data-slot="9">
-                    <div class="slot-number">9</div>
-                    <div class="slot-content" data-slot="9"></div>
-                </div>
-                <div class="slot" data-slot="10">
-                    <div class="slot-number">10</div>
-                    <div class="slot-content" data-slot="10"></div>
-                </div>
-            </div>
-
-            <div class="game-controls">
-                <button id="nextNumberBtn" class="btn btn-primary" disabled>Next Number</button>
-            </div>
+        
+        <div id="gamesContainer" class="games-container">
+            <!-- Game cards will be dynamically inserted here -->
         </div>
-
-        <!-- Game Over Screen -->
-        <div id="gameOverScreen" class="screen">
-            <h1 id="gameOverTitle">Game Over!</h1>
-            <div class="score-display">
-                <p class="score-label">Your Score:</p>
-                <div id="finalScore" class="final-score-display">0</div>
-            </div>
-            <p id="gameOverMessage" class="message"></p>
-            <div id="fireworksContainer" class="fireworks-container"></div>
-            <div id="problemNumberDisplay" class="problem-number-display" style="display: none;">
-                <p class="problem-label">Number that couldn't be placed:</p>
-                <div id="problemNumber" class="problem-number"></div>
-                <p class="problem-label">Blocked by:</p>
-                <div id="blockingNumbers" class="blocking-numbers"></div>
-            </div>
-            <div class="final-slots">
-                <h3>Your Final Ranking:</h3>
-                <div id="finalSlots" class="slots-container"></div>
-            </div>
-            <div class="player-stats">
-                <h3>Your Statistics</h3>
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <span class="stat-label">Games Played:</span>
-                        <span id="gamesPlayed" class="stat-value">0</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">High Score:</span>
-                        <span id="playerHighScore" class="stat-value">0</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Average Score:</span>
-                        <span id="averageScore" class="stat-value">0</span>
-                    </div>
-                </div>
-            </div>
-            <div class="game-over-controls">
-                <button id="restartBtn" class="btn btn-primary">Play Again</button>
-            </div>
+        
+        <div id="errorMessage" class="error-message" style="display: none;">
+            <p>Oops! Couldn't load games. Please refresh the page.</p>
         </div>
     </div>
-
-    <script src="script.js"></script>
+    
+    <script src="home.js"></script>
 </body>
 </html>
