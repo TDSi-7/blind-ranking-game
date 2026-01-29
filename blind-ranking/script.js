@@ -11,6 +11,7 @@ class BlindRankingGame {
         this.usedNumbers = new Set(); // Track numbers already used in this game
         this.currentMovableSlot = null; // Slot index of the last placed (but not yet locked) number
         this.dragSourceSlotIndex = null; // Slot index where a drag started
+        this.mobileMoveSourceSlot = null; // Tap-to-move: slot selected for move (mobile)
         
         // Difficulty settings
         this.difficultySettings = {
@@ -42,6 +43,7 @@ class BlindRankingGame {
         this.nextNumberBtn = document.getElementById('nextNumberBtn');
         this.restartBtn = document.getElementById('restartBtn');
         this.changeDifficultyBtn = document.getElementById('changeDifficultyBtn');
+        this.restartBtnTop = document.getElementById('restartBtnTop');
         this.currentNumberDisplay = document.getElementById('currentNumber');
         this.numbersPlacedDisplay = document.getElementById('numbersPlaced');
         this.gameOverMessage = document.getElementById('gameOverMessage');
@@ -75,6 +77,7 @@ class BlindRankingGame {
         this.startBtn.addEventListener('click', () => this.startGame());
         this.nextNumberBtn.addEventListener('click', () => this.generateNextNumber());
         this.restartBtn.addEventListener('click', () => this.playAgainSameDifficulty());
+        if (this.restartBtnTop) this.restartBtnTop.addEventListener('click', () => this.playAgainSameDifficulty());
         if (this.changeDifficultyBtn) this.changeDifficultyBtn.addEventListener('click', () => this.restartGame());
         
         // Name input listener
@@ -95,15 +98,40 @@ class BlindRankingGame {
         
         // Add click and drag listeners to slots
         this.slotElements.forEach(slot => {
-            // Click to place current number
+            // Click to place current number or tap-to-move (mobile)
             slot.addEventListener('click', (e) => {
                 if (!this.gameActive) return;
                 
                 const slotNumber = parseInt(slot.dataset.slot);
                 
-                // If we have a current number, try to place it
                 if (this.currentNumber !== null) {
                     this.placeNumber(slotNumber);
+                    return;
+                }
+                // Tap-to-move: no current number but have a movable slot
+                if (this.currentMovableSlot !== null) {
+                    if (this.mobileMoveSourceSlot === null) {
+                        if (slotNumber === this.currentMovableSlot) {
+                            this.mobileMoveSourceSlot = slotNumber;
+                            slot.classList.add('selected-move');
+                        }
+                        return;
+                    }
+                    if (this.mobileMoveSourceSlot === slotNumber) {
+                        this.clearSelectedMove();
+                        return;
+                    }
+                    if (this.slots[slotNumber] === null) {
+                        const number = this.slots[this.mobileMoveSourceSlot];
+                        if (number !== null && this.canPlaceInSlot(slotNumber, number)) {
+                            this.performMove(this.mobileMoveSourceSlot, slotNumber);
+                            this.clearSelectedMove();
+                        } else {
+                            this.clearSelectedMove();
+                        }
+                        return;
+                    }
+                    this.clearSelectedMove();
                 }
             });
 
@@ -147,34 +175,13 @@ class BlindRankingGame {
                 const number = this.slots[sourceIndex];
                 if (number === null) return;
 
-                // Temporarily clear the source so we can re-use canPlaceInSlot
                 this.slots[sourceIndex] = null;
-                const canMove = this.canPlaceInSlot(targetIndex, number);
-                if (!canMove) {
-                    // Restore and abort
+                if (!this.canPlaceInSlot(targetIndex, number)) {
                     this.slots[sourceIndex] = number;
                     return;
                 }
-
-                // Move the number in our data model
-                this.slots[targetIndex] = number;
-
-                // Update DOM for source
-                const sourceSlotEl = this.slotElements[sourceIndex - 1];
-                const sourceContent = sourceSlotEl.querySelector('.slot-content');
-                sourceContent.textContent = '';
-                sourceSlotEl.classList.remove('filled', 'movable');
-                sourceSlotEl.setAttribute('draggable', 'false');
-
-                // Update DOM for target
-                const targetSlotEl = this.slotElements[targetIndex - 1];
-                const targetContent = targetSlotEl.querySelector('.slot-content');
-                targetContent.textContent = number;
-                targetSlotEl.classList.add('filled', 'movable');
-                targetSlotEl.setAttribute('draggable', 'true');
-
-                // Track new movable slot
-                this.currentMovableSlot = targetIndex;
+                this.slots[sourceIndex] = number;
+                this.performMove(sourceIndex, targetIndex);
             });
 
             slot.addEventListener('dragend', () => {
@@ -237,11 +244,11 @@ class BlindRankingGame {
         this.currentMovableSlot = null;
         this.dragSourceSlotIndex = null;
         
-        // Clear all slots
+        this.clearSelectedMove();
         this.slotElements.forEach(slot => {
             const content = slot.querySelector('.slot-content');
             content.textContent = '';
-            slot.classList.remove('filled', 'disabled', 'win', 'movable', 'drag-over', 'dragging');
+            slot.classList.remove('filled', 'disabled', 'win', 'movable', 'drag-over', 'dragging', 'selected-move');
             slot.setAttribute('draggable', 'false');
         });
         
@@ -395,8 +402,33 @@ class BlindRankingGame {
         this.numbersPlacedDisplay.textContent = this.numbersPlaced;
     }
 
+    performMove(sourceIndex, targetIndex) {
+        const number = this.slots[sourceIndex];
+        if (number === null) return;
+        this.slots[sourceIndex] = null;
+        this.slots[targetIndex] = number;
+
+        const sourceSlotEl = this.slotElements[sourceIndex - 1];
+        const sourceContent = sourceSlotEl.querySelector('.slot-content');
+        sourceContent.textContent = '';
+        sourceSlotEl.classList.remove('filled', 'movable', 'selected-move');
+        sourceSlotEl.setAttribute('draggable', 'false');
+
+        const targetSlotEl = this.slotElements[targetIndex - 1];
+        const targetContent = targetSlotEl.querySelector('.slot-content');
+        targetContent.textContent = number;
+        targetSlotEl.classList.add('filled', 'movable');
+        targetSlotEl.setAttribute('draggable', 'true');
+        this.currentMovableSlot = targetIndex;
+    }
+
+    clearSelectedMove() {
+        this.mobileMoveSourceSlot = null;
+        this.slotElements.forEach(s => s.classList.remove('selected-move'));
+    }
+
     setMovableSlot(slotIndex) {
-        // Clear previous movable slot, if any
+        this.clearSelectedMove();
         if (this.currentMovableSlot !== null) {
             const prevSlotEl = this.slotElements[this.currentMovableSlot - 1];
             prevSlotEl.classList.remove('movable');
@@ -410,10 +442,11 @@ class BlindRankingGame {
     }
 
     lockCurrentMovableSlot() {
+        this.clearSelectedMove();
         if (this.currentMovableSlot === null) return;
 
         const slotEl = this.slotElements[this.currentMovableSlot - 1];
-        slotEl.classList.remove('movable', 'drag-over', 'dragging');
+        slotEl.classList.remove('movable', 'drag-over', 'dragging', 'selected-move');
         slotEl.setAttribute('draggable', 'false');
         this.currentMovableSlot = null;
         this.dragSourceSlotIndex = null;

@@ -38,25 +38,45 @@ body::before {
 
 .home-header {
     text-align: center;
-    margin-bottom: 40px;
-    padding-bottom: 32px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    margin-bottom: 44px;
+    padding: 28px 24px 36px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(236, 72, 153, 0.08) 50%, rgba(99, 102, 241, 0.1) 100%);
+    border: 2px solid rgba(99, 102, 241, 0.2);
+    box-shadow: 0 8px 32px rgba(99, 102, 241, 0.15);
 }
 
 .site-title {
-    font-size: 3rem;
-    font-weight: 700;
-    color: #0f172a;
-    margin-bottom: 8px;
+    font-size: 3.25rem;
+    font-weight: 800;
+    color: #1e1b4b;
+    margin-bottom: 12px;
     letter-spacing: -0.02em;
     line-height: 1.2;
+    text-shadow: 0 2px 0 rgba(255, 255, 255, 0.8);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.08));
+}
+
+.site-title .title-emoji {
+    display: inline-block;
+    animation: bounce-emoji 2s ease-in-out infinite;
+}
+
+.site-title .title-emoji:last-child {
+    animation-delay: 0.2s;
+}
+
+@keyframes bounce-emoji {
+    0%, 100% { transform: scale(1) translateY(0); }
+    50% { transform: scale(1.15) translateY(-2px); }
 }
 
 .home-subtitle {
-    font-size: 1.1rem;
-    color: #64748b;
-    font-weight: 500;
-    letter-spacing: 0.02em;
+    font-size: 1.2rem;
+    color: #4f46e5;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
 }
 
 .profile-section {

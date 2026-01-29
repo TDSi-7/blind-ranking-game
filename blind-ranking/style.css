@@ -28,8 +28,21 @@ body::after {
     content: '';
     position: fixed;
     inset: 0;
-    background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.15) 1px, transparent 0);
-    background-size: 24px 24px;
+    background-image:
+        repeating-linear-gradient(
+            -45deg,
+            transparent,
+            transparent 18px,
+            rgba(255, 255, 255, 0.08) 18px,
+            rgba(255, 255, 255, 0.08) 20px
+        ),
+        repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 18px,
+            rgba(255, 255, 255, 0.08) 18px,
+            rgba(255, 255, 255, 0.08) 20px
+        );
     pointer-events: none;
     z-index: 0;
 }
@@ -360,6 +373,27 @@ h3 {
     justify-content: flex-end;
 }
 
+.header-home-link {
+    display: none;
+    font-size: 0.9em;
+    font-weight: 600;
+    color: #1976D2;
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    background: #e3f2fd;
+    border: 2px solid #2196F3;
+    flex-shrink: 0;
+}
+
+.header-home-link:hover {
+    background: #bbdefb;
+}
+
+.game-over-top-actions-mobile {
+    display: none;
+}
+
 .difficulty-badge {
     min-width: 120px;
     text-align: center;
@@ -548,6 +582,12 @@ h3 {
 .slot.disabled {
     opacity: 0.5;
     cursor: not-allowed;
+}
+
+.slot.movable.selected-move {
+    outline: 4px solid #2196F3;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px #fff, 0 0 16px rgba(33, 150, 243, 0.6);
 }
 
 .slot-number {
@@ -993,11 +1033,24 @@ h3 {
     }
 
     .back-to-home-container {
-        position: relative;
-        top: 0;
-        left: 0;
-        margin-bottom: 15px;
-        text-align: center;
+        display: none;
+    }
+
+    .header-home-link {
+        display: inline-block;
+    }
+
+    .game-header {
+        margin-bottom: 12px;
+        gap: 10px;
+    }
+
+    .game-header-center h2 {
+        font-size: 1.35em;
+    }
+
+    .game-header-center .best-badge {
+        font-size: 0.8em;
     }
 
     h1 {
@@ -1011,7 +1064,7 @@ h3 {
     .slots-container {
         display: grid;
         grid-template-columns: repeat(5, 1fr);
-        gap: 10px;
+        gap: 8px;
         margin-bottom: 25px;
         max-width: 100%;
     }
@@ -1020,9 +1073,8 @@ h3 {
         width: 100%;
         min-width: 0;
         flex: none;
-        min-height: 64px;
-        padding: 12px 8px;
-        min-height: 64px;
+        min-height: 82px;
+        padding: 14px 10px;
     }
 
     .slot-content {
@@ -1047,6 +1099,16 @@ h3 {
         min-height: 48px;
     }
 
+    .game-over-top-actions-mobile {
+        display: block;
+        margin-bottom: 16px;
+    }
+
+    .game-over-top-actions-mobile .btn {
+        width: 100%;
+        padding: 14px 24px;
+    }
+
     .game-over-controls {
         flex-direction: column;
     }
@@ -1059,16 +1121,16 @@ h3 {
 
 @media (max-width: 480px) {
     .slots-container {
-        gap: 8px;
+        gap: 6px;
     }
 
     .slot {
-        min-height: 56px;
-        padding: 10px 6px;
+        min-height: 74px;
+        padding: 12px 8px;
     }
 
     .slot-content {
-        font-size: 1.35em;
+        font-size: 1.4em;
     }
 
     .slot-number {
