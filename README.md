@@ -1,10 +1,20 @@
-# Game Hub
+# Jones Games
 
-This is a game hub that hosts multiple games for children aged 8-12.
+A game hub hosting multiple games for children aged 8-12. Made by Team Jones.
 
 ## Deployment on Vercel
 
-This project is configured to deploy on Vercel. Follow these steps:
+This project is configured to deploy on Vercel. You can deploy in two ways:
+
+### Option A: Deploy from your terminal (Vercel CLI)
+
+If you have Node.js installed:
+
+1. Install the Vercel CLI (one time): `npm i -g vercel`
+2. From the project root run: `npm run deploy` or `vercel --prod`
+3. Log in or link your project when prompted; Vercel will give you a live URL
+
+### Option B: Deploy via GitHub + Vercel dashboard
 
 ### 1. Push to GitHub
 

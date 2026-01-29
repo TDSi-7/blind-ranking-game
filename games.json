@@ -9,7 +9,20 @@
       "difficultyLevels": ["Easy", "Medium", "Hard"],
       "ageRange": "8-12",
       "color": "#2196F3",
-      "featured": true
+      "featured": true,
+      "creator": "Alex"
+    },
+    {
+      "id": "mimi-memory-chess",
+      "name": "Mimi's Memory Chess",
+      "folder": "mimi-memory-chess",
+      "description": "Answer math questions, match colors, and win circles in this memory challenge!",
+      "icon": "♟️",
+      "difficultyLevels": ["Easy", "Medium", "Hard"],
+      "ageRange": "8-12",
+      "color": "#FF9800",
+      "featured": true,
+      "creator": "Mimi"
     }
   ]
 }

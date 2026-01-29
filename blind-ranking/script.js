@@ -23,6 +23,15 @@ class BlindRankingGame {
         this.attachEventListeners();
         this.loadHighScores();
         this.loadPlayerStats();
+        const Hub = window.FunGamesHubProfiles;
+        if (Hub && this.playerNameInput) {
+            const profile = Hub.getCurrentProfile();
+            if (profile && profile.name) {
+                this.playerNameInput.placeholder = profile.name;
+                this.playerNameInput.value = profile.name;
+                this.validateStartButton();
+            }
+        }
     }
 
     initializeElements() {
@@ -32,6 +41,7 @@ class BlindRankingGame {
         this.startBtn = document.getElementById('startBtn');
         this.nextNumberBtn = document.getElementById('nextNumberBtn');
         this.restartBtn = document.getElementById('restartBtn');
+        this.changeDifficultyBtn = document.getElementById('changeDifficultyBtn');
         this.currentNumberDisplay = document.getElementById('currentNumber');
         this.numbersPlacedDisplay = document.getElementById('numbersPlaced');
         this.gameOverMessage = document.getElementById('gameOverMessage');
@@ -64,7 +74,8 @@ class BlindRankingGame {
     attachEventListeners() {
         this.startBtn.addEventListener('click', () => this.startGame());
         this.nextNumberBtn.addEventListener('click', () => this.generateNextNumber());
-        this.restartBtn.addEventListener('click', () => this.restartGame());
+        this.restartBtn.addEventListener('click', () => this.playAgainSameDifficulty());
+        if (this.changeDifficultyBtn) this.changeDifficultyBtn.addEventListener('click', () => this.restartGame());
         
         // Name input listener
         this.playerNameInput.addEventListener('input', () => this.validateStartButton());
@@ -588,57 +599,99 @@ class BlindRankingGame {
         document.getElementById(screenName).classList.add('active');
     }
 
+    playAgainSameDifficulty() {
+        if (!this.difficulty || !this.playerName) {
+            this.restartGame();
+            return;
+        }
+        if (this.fireworksContainer) this.fireworksContainer.innerHTML = '';
+        if (this.gameOverScreen) this.gameOverScreen.classList.remove('celebration-active');
+        this.maxNumber = this.difficultySettings[this.difficulty].max;
+        if (this.difficultyBadge) {
+            this.difficultyBadge.className = 'difficulty-badge ' + this.difficulty;
+            const setting = this.difficultySettings[this.difficulty];
+            this.difficultyBadge.innerHTML = '<span class="difficulty-badge-label">' + setting.name + '</span><span class="difficulty-badge-range">' + (setting.range || '') + '</span>';
+        }
+        this.updateHighScoreDisplay();
+        this.gameTitle.textContent = 'Good luck, ' + this.playerName + '!';
+        this.resetGame();
+        this.showScreen('gameScreen');
+        this.generateNextNumber();
+    }
+
     restartGame() {
-        // Reset difficulty selection
         this.difficultyButtons.forEach(b => b.classList.remove('selected'));
         this.difficulty = null;
         this.validateStartButton();
-
-        // Clear any celebration state
-        if (this.fireworksContainer) {
-            this.fireworksContainer.innerHTML = '';
-        }
-        if (this.gameOverScreen) {
-            this.gameOverScreen.classList.remove('celebration-active');
-        }
-        
-        // Go back to start screen
+        if (this.fireworksContainer) this.fireworksContainer.innerHTML = '';
+        if (this.gameOverScreen) this.gameOverScreen.classList.remove('celebration-active');
         this.showScreen('startScreen');
     }
 
     loadHighScores() {
-        // Load high scores from localStorage
-        const saved = localStorage.getItem('blindRankingHighScores');
-        if (saved) {
-            const parsed = JSON.parse(saved);
-            // Backwards compatibility: previous format was simple numbers
-            if (typeof parsed.easy === 'number' || typeof parsed.medium === 'number' || typeof parsed.hard === 'number') {
-                this.highScores = {
-                    easy: { highScore: parsed.easy || 0, perfectGames: parsed.easy === 10 ? 1 : 0 },
-                    medium: { highScore: parsed.medium || 0, perfectGames: parsed.medium === 10 ? 1 : 0 },
-                    hard: { highScore: parsed.hard || 0, perfectGames: parsed.hard === 10 ? 1 : 0 }
-                };
+        const Hub = window.FunGamesHubProfiles;
+        const defaultScores = {
+            easy: { highScore: 0, perfectGames: 0 },
+            medium: { highScore: 0, perfectGames: 0 },
+            hard: { highScore: 0, perfectGames: 0 }
+        };
+
+        if (Hub) {
+            const profileId = Hub.ensureCurrentProfile();
+            const data = Hub.getStatsForGame(profileId, 'blind-ranking');
+            if (data && data.highScores) {
+                this.highScores = { ...defaultScores, ...data.highScores };
             } else {
-                this.highScores = parsed;
+                // Migrate from old keys once
+                const saved = localStorage.getItem('blindRankingHighScores');
+                if (saved) {
+                    try {
+                        const parsed = JSON.parse(saved);
+                        if (typeof parsed.easy === 'number' || typeof parsed.medium === 'number' || typeof parsed.hard === 'number') {
+                            this.highScores = {
+                                easy: { highScore: parsed.easy || 0, perfectGames: parsed.easy === 10 ? 1 : 0 },
+                                medium: { highScore: parsed.medium || 0, perfectGames: parsed.medium === 10 ? 1 : 0 },
+                                hard: { highScore: parsed.hard || 0, perfectGames: parsed.hard === 10 ? 1 : 0 }
+                            };
+                        } else {
+                            this.highScores = { ...defaultScores, ...parsed };
+                        }
+                        Hub.setStatsForGame(profileId, 'blind-ranking', { highScores: this.highScores });
+                    } catch (e) {
+                        this.highScores = { ...defaultScores };
+                    }
+                } else {
+                    this.highScores = { ...defaultScores };
+                }
             }
         } else {
-            this.highScores = {
-                easy: { highScore: 0, perfectGames: 0 },
-                medium: { highScore: 0, perfectGames: 0 },
-                hard: { highScore: 0, perfectGames: 0 }
-            };
+            const saved = localStorage.getItem('blindRankingHighScores');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    if (typeof parsed.easy === 'number' || typeof parsed.medium === 'number' || typeof parsed.hard === 'number') {
+                        this.highScores = {
+                            easy: { highScore: parsed.easy || 0, perfectGames: parsed.easy === 10 ? 1 : 0 },
+                            medium: { highScore: parsed.medium || 0, perfectGames: parsed.medium === 10 ? 1 : 0 },
+                            hard: { highScore: parsed.hard || 0, perfectGames: parsed.hard === 10 ? 1 : 0 }
+                        };
+                    } else {
+                        this.highScores = { ...defaultScores, ...parsed };
+                    }
+                } catch (e) {
+                    this.highScores = { ...defaultScores };
+                }
+            } else {
+                this.highScores = { ...defaultScores };
+            }
         }
 
-        // Ensure structure is complete
         ['easy', 'medium', 'hard'].forEach(level => {
             if (!this.highScores[level] || typeof this.highScores[level] !== 'object') {
                 this.highScores[level] = { highScore: 0, perfectGames: 0 };
             } else {
-                if (typeof this.highScores[level].highScore !== 'number') {
-                    this.highScores[level].highScore = 0;
-                }
+                if (typeof this.highScores[level].highScore !== 'number') this.highScores[level].highScore = 0;
                 if (typeof this.highScores[level].perfectGames !== 'number') {
-                    // If they already have a perfect high score but no counter, assume at least one
                     this.highScores[level].perfectGames = this.highScores[level].highScore === 10 ? 1 : 0;
                 }
             }
@@ -648,8 +701,16 @@ class BlindRankingGame {
     }
 
     saveHighScores() {
-        // Save high scores to localStorage
-        localStorage.setItem('blindRankingHighScores', JSON.stringify(this.highScores));
+        const Hub = window.FunGamesHubProfiles;
+        if (Hub) {
+            const profileId = Hub.getCurrentProfileId();
+            if (profileId) {
+                const data = Hub.getStatsForGame(profileId, 'blind-ranking') || {};
+                Hub.setStatsForGame(profileId, 'blind-ranking', { ...data, highScores: this.highScores });
+            }
+        } else {
+            localStorage.setItem('blindRankingHighScores', JSON.stringify(this.highScores));
+        }
         this.updateDifficultyStatsOverview();
     }
 
@@ -700,58 +761,87 @@ class BlindRankingGame {
     }
 
     loadPlayerStats() {
-        // Load player statistics from localStorage
-        const saved = localStorage.getItem('blindRankingPlayerStats');
-        if (saved) {
-            this.playerStats = JSON.parse(saved);
+        const Hub = window.FunGamesHubProfiles;
+        const defaultStats = { gamesPlayed: 0, totalScore: 0, highScore: 0, scores: [] };
+
+        if (Hub) {
+            const profileId = Hub.getCurrentProfileId();
+            const data = profileId ? Hub.getStatsForGame(profileId, 'blind-ranking') : null;
+            if (data && data.playerStats) {
+                this.playerStats = { ...defaultStats, ...data.playerStats };
+                if (!Array.isArray(this.playerStats.scores)) this.playerStats.scores = [];
+            } else {
+                const saved = localStorage.getItem('blindRankingPlayerStats');
+                if (saved) {
+                    try {
+                        const parsed = JSON.parse(saved);
+                        const firstKey = Object.keys(parsed)[0];
+                        const migrated = firstKey && typeof parsed[firstKey] === 'object'
+                            ? { ...defaultStats, ...parsed[firstKey] }
+                            : { ...defaultStats };
+                        if (!Array.isArray(migrated.scores)) migrated.scores = [];
+                        this.playerStats = migrated;
+                        if (profileId) Hub.setStatsForGame(profileId, 'blind-ranking', { playerStats: this.playerStats });
+                    } catch (e) {
+                        this.playerStats = { ...defaultStats };
+                    }
+                } else {
+                    this.playerStats = { ...defaultStats };
+                }
+            }
         } else {
-            this.playerStats = {};
+            const saved = localStorage.getItem('blindRankingPlayerStats');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    if (typeof parsed.gamesPlayed === 'number') {
+                        this.playerStats = { ...defaultStats, ...parsed };
+                    } else {
+                        const first = Object.keys(parsed)[0];
+                        this.playerStats = first ? { ...defaultStats, ...parsed[first] } : { ...defaultStats };
+                    }
+                    if (!Array.isArray(this.playerStats.scores)) this.playerStats.scores = [];
+                } catch (e) {
+                    this.playerStats = { ...defaultStats };
+                }
+            } else {
+                this.playerStats = { ...defaultStats };
+            }
         }
     }
 
     savePlayerStats() {
-        // Save player statistics to localStorage
-        localStorage.setItem('blindRankingPlayerStats', JSON.stringify(this.playerStats));
+        const Hub = window.FunGamesHubProfiles;
+        if (Hub) {
+            const profileId = Hub.getCurrentProfileId();
+            if (profileId) {
+                const data = Hub.getStatsForGame(profileId, 'blind-ranking') || {};
+                Hub.setStatsForGame(profileId, 'blind-ranking', { ...data, playerStats: this.playerStats });
+            }
+        } else {
+            localStorage.setItem('blindRankingPlayerStats', JSON.stringify(this.playerStats));
+        }
     }
 
     updatePlayerStats(score) {
-        if (!this.playerName) return;
-        
-        // Get or create player stats
-        if (!this.playerStats[this.playerName]) {
-            this.playerStats[this.playerName] = {
-                gamesPlayed: 0,
-                totalScore: 0,
-                highScore: 0,
-                scores: []
-            };
-        }
-        
-        const stats = this.playerStats[this.playerName];
-        stats.gamesPlayed++;
-        stats.totalScore += score;
-        stats.scores.push(score);
-        
-        if (score > stats.highScore) {
-            stats.highScore = score;
-        }
-        
+        if (!this.playerStats) this.playerStats = { gamesPlayed: 0, totalScore: 0, highScore: 0, scores: [] };
+        this.playerStats.gamesPlayed++;
+        this.playerStats.totalScore += score;
+        this.playerStats.scores.push(score);
+        if (score > this.playerStats.highScore) this.playerStats.highScore = score;
         this.savePlayerStats();
     }
 
     updateStatsDisplay() {
-        if (!this.playerName || !this.playerStats[this.playerName]) {
+        if (!this.playerStats) {
             this.gamesPlayedDisplay.textContent = '0';
             this.playerHighScoreDisplay.textContent = '0';
             this.averageScoreDisplay.textContent = '0';
             return;
         }
-        
-        const stats = this.playerStats[this.playerName];
-        this.gamesPlayedDisplay.textContent = stats.gamesPlayed;
-        this.playerHighScoreDisplay.textContent = stats.highScore;
-        
-        const average = stats.gamesPlayed > 0 ? (stats.totalScore / stats.gamesPlayed).toFixed(1) : '0';
+        this.gamesPlayedDisplay.textContent = this.playerStats.gamesPlayed;
+        this.playerHighScoreDisplay.textContent = this.playerStats.highScore;
+        const average = this.playerStats.gamesPlayed > 0 ? (this.playerStats.totalScore / this.playerStats.gamesPlayed).toFixed(1) : '0';
         this.averageScoreDisplay.textContent = average;
     }
 }

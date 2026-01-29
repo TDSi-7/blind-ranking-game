@@ -6,12 +6,37 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+    background: linear-gradient(135deg, #42A5F5 0%, #2196F3 35%, #1976D2 100%);
     min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 20px;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.12) 100%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.15) 1px, transparent 0);
+    background-size: 24px 24px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+body > .container {
+    position: relative;
+    z-index: 1;
 }
 
 .container {
@@ -297,16 +322,28 @@ h3 {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+    gap: 15px;
 }
 
-.game-header-left {
+.game-header-spacer {
+    flex: 1;
+    min-width: 0;
+}
+
+.game-header-center {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 6px;
+    flex: 0 0 auto;
+    text-align: center;
+}
+
+.game-header-center .best-badge {
+    align-self: center;
 }
 
 .best-badge {
-    align-self: flex-start;
     padding: 4px 10px;
     border-radius: 999px;
     background: #fff3e0;
@@ -314,6 +351,13 @@ h3 {
     font-size: 0.8em;
     font-weight: 600;
     color: #f57c00;
+}
+
+.game-header .difficulty-badge {
+    flex: 1;
+    min-width: 100px;
+    display: flex;
+    justify-content: flex-end;
 }
 
 .difficulty-badge {
@@ -657,6 +701,17 @@ h3 {
     cursor: not-allowed;
 }
 
+.btn-secondary {
+    background: linear-gradient(135deg, #78909c 0%, #607d8b 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(96, 125, 139, 0.35);
+}
+
+.btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(96, 125, 139, 0.45);
+}
+
 .start-button-group {
     text-align: center;
     margin-top: 10px;
@@ -778,39 +833,67 @@ h3 {
     margin-top: 20px;
 }
 
-.difficulty-stats {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
-}
-
-.difficulty-stat {
-    background: #ffffff;
-    border-radius: 8px;
-    padding: 10px 15px;
-    min-width: 160px;
-    text-align: center;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.difficulty-name {
+.difficulty-stats-wrapper > label {
+    font-size: 0.95em;
+    color: #1565c0;
     font-weight: 700;
-    color: #333;
+    margin-bottom: 10px;
+    display: block;
 }
 
-.difficulty-high-score,
-.difficulty-perfects {
-    font-size: 0.9em;
-    color: #555;
+.difficulty-stats-card {
+    background: linear-gradient(180deg, #e3f2fd 0%, #bbdefb 100%);
+    border-radius: 12px;
+    padding: 0;
+    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2);
+    border: 2px solid #2196F3;
+    overflow: hidden;
 }
 
-.difficulty-perfects span {
-    font-weight: 600;
-    color: #ff9800;
+.difficulty-stats-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95em;
+}
+
+.difficulty-stats-table th,
+.difficulty-stats-table td {
+    padding: 14px 18px;
+    text-align: left;
+}
+
+.difficulty-stats-table th {
+    background: rgba(33, 150, 243, 0.25);
+    font-weight: 700;
+    color: #0d47a1;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 0.85em;
+}
+
+.difficulty-stats-table tbody tr {
+    border-top: 1px solid rgba(33, 150, 243, 0.3);
+}
+
+.difficulty-stats-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.difficulty-stats-table .difficulty-name {
+    font-weight: 700;
+    color: #0d47a1;
+}
+
+.difficulty-stats-table td:nth-child(2),
+.difficulty-stats-table td:nth-child(3) {
+    text-align: center;
+    font-weight: 700;
+    color: #1565c0;
+}
+
+.difficulty-stats-table td:nth-child(3) span {
+    color: #f57c00;
+    font-weight: 800;
 }
 
 /* Fireworks celebration */
@@ -926,25 +1009,42 @@ h3 {
     }
 
     .slots-container {
-        flex-wrap: nowrap;
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
         gap: 10px;
-        overflow-x: auto;
-    }
-    
-    .slot {
-        width: 70px;
-        flex: 0 0 70px;
-        min-width: 70px;
+        margin-bottom: 25px;
+        max-width: 100%;
     }
 
     .slot {
-        min-height: 80px;
-        padding: 10px;
+        width: 100%;
+        min-width: 0;
+        flex: none;
+        min-height: 64px;
+        padding: 12px 8px;
+        min-height: 64px;
+    }
+
+    .slot-content {
+        font-size: 1.5em;
+    }
+
+    .game-info {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 25px;
     }
 
     .number-display {
         font-size: 2em;
-        padding: 15px 30px;
+        padding: 18px 28px;
+        min-width: 120px;
+    }
+
+    .game-controls .btn-primary {
+        padding: 18px 36px;
+        min-height: 48px;
     }
 
     .game-over-controls {
@@ -954,5 +1054,24 @@ h3 {
     .btn-back-home-inline {
         margin-left: 0;
         margin-top: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .slots-container {
+        gap: 8px;
+    }
+
+    .slot {
+        min-height: 56px;
+        padding: 10px 6px;
+    }
+
+    .slot-content {
+        font-size: 1.35em;
+    }
+
+    .slot-number {
+        font-size: 0.8em;
     }
 }

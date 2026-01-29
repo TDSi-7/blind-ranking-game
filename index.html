@@ -3,15 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fun Games Hub</title>
+    <title>Jones Games</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="home-container">
         <header class="home-header">
-            <h1>🎮 Fun Games Hub 🎮</h1>
-            <p class="home-subtitle">Choose a game to play!</p>
+            <h1 class="site-title">Jones Games</h1>
+            <p class="home-subtitle">Made by Team Jones</p>
         </header>
+
+        <div class="profile-section">
+            <label for="profileSelect" class="profile-label">Playing as:</label>
+            <div class="profile-row">
+                <select id="profileSelect" class="profile-select" aria-label="Select profile"></select>
+                <button type="button" id="createProfileBtn" class="btn-profile-create">New profile</button>
+            </div>
+            <div id="createProfileForm" class="create-profile-form" style="display: none;">
+                <input type="text" id="newProfileName" class="new-profile-name" placeholder="Enter name" maxlength="24">
+                <button type="button" id="saveNewProfileBtn" class="btn-save-profile">Save</button>
+                <button type="button" id="cancelNewProfileBtn" class="btn-cancel-profile">Cancel</button>
+            </div>
+        </div>
+
+        <div id="statsSummary" class="stats-summary" style="display: none;">
+            <h3 class="stats-summary-title">My stats</h3>
+            <div id="statsSummaryContent" class="stats-summary-content"></div>
+        </div>
         
         <div id="loadingMessage" class="loading-message">
             <p>Loading games...</p>
@@ -26,6 +44,7 @@
         </div>
     </div>
     
+    <script src="js/profiles.js"></script>
     <script src="home.js"></script>
 </body>
 </html>

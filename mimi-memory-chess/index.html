@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mimi's Memory Chess</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Back to Home Button -->
+        <div class="back-to-home-container">
+            <a href="../index.html" class="btn-back-home">← Back to Home</a>
+        </div>
+
+        <!-- Start Screen -->
+        <div id="startScreen" class="screen active">
+            <h1>Mimi's Memory Chess</h1>
+            <p class="subtitle">Answer math questions, match colors, and win circles!</p>
+            <div class="start-form">
+                <div class="form-group">
+                    <label for="player1Name">Player 1 Name:</label>
+                    <input type="text" id="player1Name" placeholder="Player 1" maxlength="20">
+                </div>
+                <div class="form-group" id="player2Group" style="display: none;">
+                    <label for="player2Name">Player 2 Name:</label>
+                    <input type="text" id="player2Name" placeholder="Player 2" maxlength="20">
+                </div>
+                <div class="form-group">
+                    <label>Circle Count:</label>
+                    <div class="option-buttons">
+                        <button class="btn-option" data-option="25" data-type="circles">25 Circles (Easy)</button>
+                        <button class="btn-option" data-option="50" data-type="circles">50 Circles (Hard)</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Player Mode:</label>
+                    <div class="option-buttons">
+                        <button class="btn-option" data-option="1" data-type="players">1 Player</button>
+                        <button class="btn-option" data-option="2" data-type="players">2 Players</button>
+                    </div>
+                </div>
+                <div class="form-group" id="computerDifficultyGroup" style="display: none;">
+                    <label>Computer Difficulty:</label>
+                    <div class="option-buttons">
+                        <button class="btn-option" data-option="easy" data-type="difficulty">Easy</button>
+                        <button class="btn-option" data-option="medium" data-type="difficulty">Medium</button>
+                        <button class="btn-option" data-option="hard" data-type="difficulty">Hard</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Game Mode:</label>
+                    <div class="option-buttons">
+                        <button class="btn-option" data-option="all" data-type="gamemode">All Circles</button>
+                        <button class="btn-option" data-option="5" data-type="gamemode">First to 5</button>
+                        <button class="btn-option" data-option="10" data-type="gamemode">First to 10</button>
+                    </div>
+                </div>
+                <div class="form-group start-button-group">
+                    <button id="startBtn" class="btn btn-start" disabled>Start Game</button>
+                </div>
+            </div>
+            <div class="instructions">
+                <h3 class="instructions-title">How to Play</h3>
+                <ul class="instructions-list">
+                    <li><span class="bullet-label">1.</span> Answer the math question correctly.</li>
+                    <li><span class="bullet-label">2.</span> Your answer maps to a color (see color key at top).</li>
+                    <li><span class="bullet-label">3.</span> Pick a circle to reveal its hidden color.</li>
+                    <li><span class="bullet-label">4.</span> If colors match, you win the circle and get another turn!</li>
+                    <li><span class="bullet-label">5.</span> If no match, the circle hides after 2 seconds and it's the next player's turn.</li>
+                    <li><span class="bullet-label">6.</span> Win by collecting the most circles (All Circles mode) or reaching the target first!</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="gameScreen" class="screen">
+            <div class="game-header">
+                <div class="game-header-left">
+                    <h2 id="gameTitle">Mimi's Memory Chess</h2>
+                    <div class="current-player-indicator">
+                        <span id="currentPlayerName">Player 1</span>'s Turn
+                    </div>
+                </div>
+                <div class="scores-display">
+                    <div class="score-item">
+                        <span class="score-label" id="player1ScoreLabel">Player 1:</span>
+                        <span class="score-value" id="player1Score">0</span>
+                    </div>
+                    <div class="score-item">
+                        <span class="score-label" id="player2ScoreLabel">Player 2:</span>
+                        <span class="score-value" id="player2Score">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Color Key -->
+            <div class="color-key">
+                <div class="color-key-title">Color Key</div>
+                <div class="color-key-items">
+                    <div class="color-item" data-color="yellow">
+                        <div class="color-swatch" style="background: #FFD700;"></div>
+                        <span class="color-range">0-24</span>
+                    </div>
+                    <div class="color-item" data-color="green">
+                        <div class="color-swatch" style="background: #4CAF50;"></div>
+                        <span class="color-range">25-50</span>
+                    </div>
+                    <div class="color-item" data-color="blue">
+                        <div class="color-swatch" style="background: #2196F3;"></div>
+                        <span class="color-range">51-75</span>
+                    </div>
+                    <div class="color-item" data-color="black">
+                        <div class="color-swatch" style="background: #212121;"></div>
+                        <span class="color-range">76-100</span>
+                    </div>
+                    <div class="color-item" data-color="red">
+                        <div class="color-swatch" style="background: #F44336;"></div>
+                        <span class="color-range">101-125</span>
+                    </div>
+                    <div class="color-item" data-color="orange">
+                        <div class="color-swatch" style="background: #FF9800;"></div>
+                        <span class="color-range">126-150</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Math Question Section -->
+            <div class="math-section">
+                <div class="math-question">
+                    <div id="questionText" class="question-text">5 + 3 = ?</div>
+                </div>
+                <div class="answer-section">
+                    <input type="number" id="answerInput" class="answer-input" placeholder="Your answer" min="0" max="150">
+                    <button id="submitAnswerBtn" class="btn btn-primary">Submit Answer</button>
+                </div>
+                <div id="answerResult" class="answer-result" style="display: none;">
+                    <div id="answerValue" class="answer-value"></div>
+                    <div id="answerColor" class="answer-color"></div>
+                    <div id="pickCirclePrompt" class="pick-circle-prompt">Now pick a circle!</div>
+                </div>
+            </div>
+
+            <!-- Circle Grid -->
+            <div id="circleGrid" class="circle-grid">
+                <!-- Circles will be generated dynamically -->
+            </div>
+        </div>
+
+        <!-- Game Over Screen -->
+        <div id="gameOverScreen" class="screen">
+            <h1 id="gameOverTitle">Game Over!</h1>
+            <div class="winner-display">
+                <div id="winnerName" class="winner-name"></div>
+                <div class="final-scores">
+                    <div class="final-score-item">
+                        <span id="finalPlayer1Name">Player 1</span>: <span id="finalPlayer1Score">0</span> circles
+                    </div>
+                    <div class="final-score-item">
+                        <span id="finalPlayer2Name">Player 2</span>: <span id="finalPlayer2Score">0</span> circles
+                    </div>
+                </div>
+            </div>
+            <div class="game-over-controls">
+                <button id="restartBtn" class="btn btn-primary">Play Again</button>
+                <a href="../index.html" class="btn btn-back-home-inline">Back to Home</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/profiles.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

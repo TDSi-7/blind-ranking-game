@@ -1,6 +1,9 @@
 {
-  "name": "game-hub",
+  "name": "jones-games",
   "version": "1.0.0",
   "private": true,
-  "description": "Educational games for children aged 8-12"
+  "description": "Educational games for children aged 8-12",
+  "scripts": {
+    "deploy": "vercel --prod"
+  }
 }

@@ -19,7 +19,7 @@
             <p class="subtitle">Place numbers in order without seeing them!</p>
             <div class="start-form">
                 <div class="form-group">
-                    <label for="playerName">Enter your First Name:</label>
+                    <label for="playerName">Enter your First Name / Nickname:</label>
                     <input type="text" id="playerName" placeholder="Your name" maxlength="20">
                 </div>
                 <div class="form-group">
@@ -32,22 +32,33 @@
                 </div>
                 <div class="form-group difficulty-stats-wrapper">
                     <label>Difficulty High Scores:</label>
-                    <div class="difficulty-stats">
-                        <div class="difficulty-stat">
-                            <span class="difficulty-name">Easy</span>
-                            <span class="difficulty-high-score">Best: <span id="easyHighScore">-</span></span>
-                            <span class="difficulty-perfects">10/10s: <span id="easyPerfects">0</span></span>
-                        </div>
-                        <div class="difficulty-stat">
-                            <span class="difficulty-name">Medium</span>
-                            <span class="difficulty-high-score">Best: <span id="mediumHighScore">-</span></span>
-                            <span class="difficulty-perfects">10/10s: <span id="mediumPerfects">0</span></span>
-                        </div>
-                        <div class="difficulty-stat">
-                            <span class="difficulty-name">Hard</span>
-                            <span class="difficulty-high-score">Best: <span id="hardHighScore">-</span></span>
-                            <span class="difficulty-perfects">10/10s: <span id="hardPerfects">0</span></span>
-                        </div>
+                    <div class="difficulty-stats-card">
+                        <table class="difficulty-stats-table">
+                            <thead>
+                                <tr>
+                                    <th>Difficulty</th>
+                                    <th>Best</th>
+                                    <th>10/10s</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="difficulty-name">Easy</td>
+                                    <td><span id="easyHighScore">-</span></td>
+                                    <td><span id="easyPerfects">0</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="difficulty-name">Medium</td>
+                                    <td><span id="mediumHighScore">-</span></td>
+                                    <td><span id="mediumPerfects">0</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="difficulty-name">Hard</td>
+                                    <td><span id="hardHighScore">-</span></td>
+                                    <td><span id="hardPerfects">0</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
                 <div class="form-group start-button-group">
@@ -69,7 +80,8 @@
         <!-- Game Screen -->
         <div id="gameScreen" class="screen">
             <div class="game-header">
-                <div class="game-header-left">
+                <div class="game-header-spacer"></div>
+                <div class="game-header-center">
                     <h2 id="gameTitle">Blind Ranking Numbers</h2>
                     <div class="best-badge">Best: <span id="highScore">-</span></div>
                 </div>
@@ -172,11 +184,13 @@
             </div>
             <div class="game-over-controls">
                 <button id="restartBtn" class="btn btn-primary">Play Again</button>
+                <button id="changeDifficultyBtn" class="btn btn-secondary">Change difficulty</button>
                 <a href="../index.html" class="btn btn-back-home-inline">Back to Home</a>
             </div>
         </div>
     </div>
 
+    <script src="../js/profiles.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
