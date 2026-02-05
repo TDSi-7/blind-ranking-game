@@ -188,7 +188,76 @@ class BlindRankingGame {
                 this.dragSourceSlotIndex = null;
                 this.slotElements.forEach(s => s.classList.remove('drag-over', 'dragging'));
             });
+
+            // Touch events for mobile drag-and-drop
+            slot.addEventListener('touchstart', (e) => {
+                if (!this.gameActive) return;
+                const slotIndex = parseInt(slot.dataset.slot);
+                
+                // Only allow touch-drag from the movable slot
+                if (slotIndex === this.currentMovableSlot && this.currentNumber === null) {
+                    this.touchDragSourceIndex = slotIndex;
+                    this.touchStartTime = Date.now();
+                    slot.classList.add('dragging');
+                    e.preventDefault();
+                }
+            }, { passive: false });
+
+            slot.addEventListener('touchmove', (e) => {
+                if (this.touchDragSourceIndex === null) return;
+                e.preventDefault();
+                
+                const touch = e.touches[0];
+                const elementUnderTouch = document.elementFromPoint(touch.clientX, touch.clientY);
+                
+                // Clear previous drag-over highlights
+                this.slotElements.forEach(s => s.classList.remove('drag-over'));
+                
+                // Highlight target slot if valid
+                if (elementUnderTouch) {
+                    const targetSlot = elementUnderTouch.closest('.slot');
+                    if (targetSlot) {
+                        const targetIndex = parseInt(targetSlot.dataset.slot);
+                        if (this.slots[targetIndex] === null && targetIndex !== this.touchDragSourceIndex) {
+                            targetSlot.classList.add('drag-over');
+                        }
+                    }
+                }
+            }, { passive: false });
+
+            slot.addEventListener('touchend', (e) => {
+                if (this.touchDragSourceIndex === null) return;
+                
+                const sourceIndex = this.touchDragSourceIndex;
+                this.touchDragSourceIndex = null;
+                
+                // Clear all drag states
+                this.slotElements.forEach(s => s.classList.remove('drag-over', 'dragging'));
+                
+                // Find the slot under the touch point
+                const touch = e.changedTouches[0];
+                const elementUnderTouch = document.elementFromPoint(touch.clientX, touch.clientY);
+                
+                if (elementUnderTouch) {
+                    const targetSlot = elementUnderTouch.closest('.slot');
+                    if (targetSlot) {
+                        const targetIndex = parseInt(targetSlot.dataset.slot);
+                        
+                        // Perform move if valid
+                        if (targetIndex !== sourceIndex && this.slots[targetIndex] === null) {
+                            const number = this.slots[sourceIndex];
+                            if (number !== null && this.canPlaceInSlot(targetIndex, number)) {
+                                this.performMove(sourceIndex, targetIndex);
+                            }
+                        }
+                    }
+                }
+            });
         });
+        
+        // Initialize touch drag tracking
+        this.touchDragSourceIndex = null;
+        this.touchStartTime = null;
     }
 
     validateStartButton() {
@@ -293,7 +362,7 @@ class BlindRankingGame {
             this.gameActive = false;
             setTimeout(() => {
                 this.endGame(false);
-            }, 3000);
+            }, 2000);
             return;
         }
         
@@ -498,17 +567,62 @@ class BlindRankingGame {
         this.fireworksContainer.innerHTML = '';
         this.gameOverScreen.classList.add('celebration-active');
 
-        const fireworkCount = 8;
+        const colors = ['#FF6B6B', '#4ECDC4', '#FFE66D', '#95E1D3', '#F38181', '#AA96DA', '#FCBAD3', '#A8D8EA'];
+        const fireworkCount = 12;
+
         for (let i = 0; i < fireworkCount; i++) {
+            const left = 10 + Math.random() * 80;
+            const delay = Math.random() * 2.5;
+            const duration = 0.8 + Math.random() * 0.4;
+            const height = 40 + Math.random() * 30;
+            const color = colors[Math.floor(Math.random() * colors.length)];
+
+            // Create rocket trail
             const fw = document.createElement('div');
             fw.className = 'firework';
-            const left = 10 + Math.random() * 80;
-            const delay = Math.random() * 1.5;
             fw.style.left = `${left}%`;
-            fw.style.animationDelay = `${delay}s`;
             fw.style.setProperty('--fw-delay', `${delay}s`);
+            fw.style.setProperty('--fw-duration', `${duration}s`);
+            fw.style.setProperty('--fw-height', `${height}vh`);
+            fw.style.setProperty('--fw-color', color);
             this.fireworksContainer.appendChild(fw);
+
+            // Create burst with sparks
+            const burst = document.createElement('div');
+            burst.className = 'firework-burst';
+            burst.style.left = `${left}%`;
+            burst.style.bottom = '0';
+            burst.style.setProperty('--fw-delay', `${delay}s`);
+            burst.style.setProperty('--fw-duration', `${duration}s`);
+            burst.style.setProperty('--fw-height', `${height}vh`);
+
+            // Create multiple spark particles
+            const sparkCount = 12 + Math.floor(Math.random() * 8);
+            for (let j = 0; j < sparkCount; j++) {
+                const spark = document.createElement('div');
+                spark.className = 'firework-spark';
+                const angle = (j / sparkCount) * Math.PI * 2;
+                const distance = 40 + Math.random() * 60;
+                const sparkX = Math.cos(angle) * distance;
+                const sparkY = Math.sin(angle) * distance + Math.random() * 20;
+                const sparkColor = colors[Math.floor(Math.random() * colors.length)];
+                spark.style.setProperty('--spark-x', `${sparkX}px`);
+                spark.style.setProperty('--spark-y', `${sparkY}px`);
+                spark.style.setProperty('--spark-color', sparkColor);
+                spark.style.setProperty('--fw-delay', `${delay}s`);
+                spark.style.setProperty('--fw-duration', `${duration}s`);
+                burst.appendChild(spark);
+            }
+
+            this.fireworksContainer.appendChild(burst);
         }
+
+        // Re-trigger fireworks every few seconds
+        setTimeout(() => {
+            if (this.gameOverScreen.classList.contains('celebration-active')) {
+                this.triggerCelebration();
+            }
+        }, 3500);
     }
 
     showProblemNumber() {

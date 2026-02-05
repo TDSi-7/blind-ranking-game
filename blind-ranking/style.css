@@ -6,7 +6,7 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    background: linear-gradient(135deg, #42A5F5 0%, #2196F3 35%, #1976D2 100%);
+    background: linear-gradient(135deg, #FF6B35 0%, #F7931E 35%, #D62828 100%);
     min-height: 100vh;
     display: flex;
     justify-content: center;
@@ -19,7 +19,7 @@ body::before {
     content: '';
     position: fixed;
     inset: 0;
-    background: radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.12) 100%);
+    background: radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.15) 100%);
     pointer-events: none;
     z-index: 0;
 }
@@ -33,15 +33,15 @@ body::after {
             -45deg,
             transparent,
             transparent 18px,
-            rgba(255, 255, 255, 0.08) 18px,
-            rgba(255, 255, 255, 0.08) 20px
+            rgba(255, 255, 255, 0.06) 18px,
+            rgba(255, 255, 255, 0.06) 20px
         ),
         repeating-linear-gradient(
             45deg,
             transparent,
             transparent 18px,
-            rgba(255, 255, 255, 0.08) 18px,
-            rgba(255, 255, 255, 0.08) 20px
+            rgba(255, 255, 255, 0.06) 18px,
+            rgba(255, 255, 255, 0.06) 20px
         );
     pointer-events: none;
     z-index: 0;
@@ -74,9 +74,9 @@ body > .container {
     padding: 10px 20px;
     font-size: 0.95em;
     font-weight: 600;
-    color: #1976D2;
-    background: #e3f2fd;
-    border: 2px solid #2196F3;
+    color: #D62828;
+    background: #fff5f0;
+    border: 2px solid #FF6B35;
     border-radius: 8px;
     text-decoration: none;
     transition: all 0.3s ease;
@@ -84,9 +84,9 @@ body > .container {
 }
 
 .btn-back-home:hover {
-    background: #bbdefb;
+    background: #ffe8dd;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
 }
 
 .btn-back-home-inline {
@@ -377,20 +377,20 @@ h3 {
     display: none;
     font-size: 0.9em;
     font-weight: 600;
-    color: #1976D2;
+    color: #D62828;
     text-decoration: none;
     padding: 6px 12px;
     border-radius: 8px;
-    background: #e3f2fd;
-    border: 2px solid #2196F3;
+    background: #fff5f0;
+    border: 2px solid #FF6B35;
     flex-shrink: 0;
 }
 
 .header-home-link:hover {
-    background: #bbdefb;
+    background: #ffe8dd;
 }
 
-.game-over-top-actions-mobile {
+.game-over-mobile-actions {
     display: none;
 }
 
@@ -588,6 +588,37 @@ h3 {
     outline: 4px solid #2196F3;
     outline-offset: 2px;
     box-shadow: 0 0 0 2px #fff, 0 0 16px rgba(33, 150, 243, 0.6);
+}
+
+/* Mobile movable slot visual hint */
+@media (max-width: 768px) {
+    .slot.filled.movable {
+        animation: mobilePulse 1.5s ease-in-out infinite;
+        position: relative;
+    }
+    
+    .slot.filled.movable::after {
+        content: 'tap to move';
+        position: absolute;
+        bottom: -22px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 0.65em;
+        color: #2196F3;
+        font-weight: 600;
+        white-space: nowrap;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    @keyframes mobilePulse {
+        0%, 100% {
+            box-shadow: 0 0 0 0 rgba(33, 150, 243, 0.4);
+        }
+        50% {
+            box-shadow: 0 0 0 8px rgba(33, 150, 243, 0);
+        }
+    }
 }
 
 .slot-number {
@@ -954,61 +985,91 @@ h3 {
     box-shadow: 0 0 40px rgba(255, 193, 7, 0.9);
 }
 
+/* Firework rocket trail */
 .firework {
     position: absolute;
-    bottom: 0;
-    width: 4px;
-    height: 80px;
-    background: transparent;
-    animation: fireworkShoot 1s ease-out infinite;
+    bottom: -20px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--fw-color, #FFD700);
+    box-shadow: 0 0 6px 2px var(--fw-color, #FFD700);
+    animation: fireworkLaunch var(--fw-duration, 1s) ease-out forwards;
     animation-delay: var(--fw-delay, 0s);
 }
 
+/* Trail effect */
 .firework::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: -40px;
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    border: 3px solid rgba(255, 255, 255, 0.9);
-    box-shadow:
-        0 0 0 2px rgba(255, 193, 7, 0.8),
-        0 0 20px 4px rgba(255, 235, 59, 0.9);
-    opacity: 0;
-    transform: scale(0.1);
-    animation: fireworkExplode 1s ease-out infinite;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 3px;
+    height: 30px;
+    background: linear-gradient(to top, transparent, var(--fw-color, #FFD700));
+    opacity: 0.7;
+}
+
+/* Explosion burst container */
+.firework-burst {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    animation: fireworkAppear var(--fw-duration, 1s) ease-out forwards;
     animation-delay: var(--fw-delay, 0s);
 }
 
-@keyframes fireworkShoot {
+/* Individual spark particles */
+.firework-spark {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--spark-color, #FFD700);
+    box-shadow: 0 0 6px 2px var(--spark-color, #FFD700);
+    animation: sparkFly 1.2s ease-out forwards;
+    animation-delay: calc(var(--fw-delay, 0s) + var(--fw-duration, 1s) * 0.6);
+}
+
+@keyframes fireworkLaunch {
     0% {
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
         opacity: 1;
     }
-    70% {
-        transform: translateY(-60vh);
+    60% {
+        transform: translateY(calc(-1 * var(--fw-height, 50vh))) scale(1);
         opacity: 1;
     }
     100% {
-        transform: translateY(-60vh);
+        transform: translateY(calc(-1 * var(--fw-height, 50vh))) scale(0);
         opacity: 0;
     }
 }
 
-@keyframes fireworkExplode {
-    0% {
+@keyframes fireworkAppear {
+    0%, 59% {
         opacity: 0;
-        transform: scale(0.1);
+        transform: translateY(0);
     }
-    30% {
+    60% {
         opacity: 1;
-        transform: scale(1);
+        transform: translateY(calc(-1 * var(--fw-height, 50vh)));
     }
     100% {
+        opacity: 1;
+        transform: translateY(calc(-1 * var(--fw-height, 50vh)));
+    }
+}
+
+@keyframes sparkFly {
+    0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(var(--spark-x, 50px), var(--spark-y, 50px)) scale(0.3);
         opacity: 0;
-        transform: scale(1.5);
     }
 }
 
@@ -1099,14 +1160,17 @@ h3 {
         min-height: 48px;
     }
 
-    .game-over-top-actions-mobile {
+    .game-over-mobile-actions {
         display: block;
-        margin-bottom: 16px;
+        margin: 20px 0;
+        text-align: center;
     }
 
-    .game-over-top-actions-mobile .btn {
+    .game-over-mobile-actions .btn {
         width: 100%;
-        padding: 14px 24px;
+        max-width: 280px;
+        padding: 16px 32px;
+        font-size: 1.1em;
     }
 
     .game-over-controls {
