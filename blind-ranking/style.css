@@ -1102,8 +1102,25 @@ h3 {
     }
 
     .game-header {
+        flex-wrap: wrap;
         margin-bottom: 12px;
-        gap: 10px;
+        gap: 8px;
+        justify-content: center;
+    }
+    
+    .game-header-spacer {
+        display: none;
+    }
+    
+    .game-header .header-home-link {
+        order: 1;
+        flex: 0 0 auto;
+    }
+    
+    .game-header-center {
+        order: 3;
+        flex: 1 0 100%;
+        margin-top: 4px;
     }
 
     .game-header-center h2 {
@@ -1112,6 +1129,14 @@ h3 {
 
     .game-header-center .best-badge {
         font-size: 0.8em;
+    }
+    
+    .game-header .difficulty-badge {
+        order: 2;
+        flex: 0 0 auto;
+        min-width: auto;
+        padding: 6px 12px;
+        font-size: 0.75em;
     }
 
     h1 {

@@ -122,10 +122,20 @@ class BlindRankingGame {
                         return;
                     }
                     if (this.slots[slotNumber] === null) {
-                        const number = this.slots[this.mobileMoveSourceSlot];
-                        if (number !== null && this.canPlaceInSlot(slotNumber, number)) {
-                            this.performMove(this.mobileMoveSourceSlot, slotNumber);
-                            this.clearSelectedMove();
+                        const sourceSlot = this.mobileMoveSourceSlot;
+                        const number = this.slots[sourceSlot];
+                        if (number !== null) {
+                            // Temporarily clear source slot for boundary check
+                            this.slots[sourceSlot] = null;
+                            const canPlace = this.canPlaceInSlot(slotNumber, number);
+                            this.slots[sourceSlot] = number; // Restore
+                            
+                            if (canPlace) {
+                                this.performMove(sourceSlot, slotNumber);
+                                this.clearSelectedMove();
+                            } else {
+                                this.clearSelectedMove();
+                            }
                         } else {
                             this.clearSelectedMove();
                         }
@@ -246,8 +256,15 @@ class BlindRankingGame {
                         // Perform move if valid
                         if (targetIndex !== sourceIndex && this.slots[targetIndex] === null) {
                             const number = this.slots[sourceIndex];
-                            if (number !== null && this.canPlaceInSlot(targetIndex, number)) {
-                                this.performMove(sourceIndex, targetIndex);
+                            if (number !== null) {
+                                // Temporarily clear source slot for boundary check
+                                this.slots[sourceIndex] = null;
+                                const canPlace = this.canPlaceInSlot(targetIndex, number);
+                                this.slots[sourceIndex] = number; // Restore
+                                
+                                if (canPlace) {
+                                    this.performMove(sourceIndex, targetIndex);
+                                }
                             }
                         }
                     }
