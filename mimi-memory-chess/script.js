@@ -57,6 +57,7 @@ class MimiMemoryChess {
         this.answerValue = document.getElementById('answerValue');
         this.answerColor = document.getElementById('answerColor');
         this.pickCirclePrompt = document.getElementById('pickCirclePrompt');
+        this.answerSection = document.querySelector('.answer-section');
         this.currentPlayerName = document.getElementById('currentPlayerName');
         this.player1ScoreEl = document.getElementById('player1Score');
         this.player2ScoreEl = document.getElementById('player2Score');
@@ -248,7 +249,38 @@ class MimiMemoryChess {
         
         this.questionText.textContent = question.text;
         this.currentCorrectAnswer = answer; // Store the correct answer
-        this.answerInput.focus();
+
+        if (this.currentPlayer === 2 && this.playerMode === 1) {
+            if (this.answerSection) this.answerSection.style.display = 'none';
+            this.answerResult.style.display = 'none';
+            this.questionText.textContent = question.text + ' (Computer\'s turn...)';
+            setTimeout(() => this.computerAnswerAndPick(), 1500);
+        } else {
+            if (this.answerSection) this.answerSection.style.display = '';
+            this.answerInput.value = '';
+            this.answerInput.disabled = false;
+            this.submitAnswerBtn.disabled = false;
+            this.answerInput.focus();
+        }
+    }
+
+    computerAnswerAndPick() {
+        if (!this.gameActive || this.currentPlayer !== 2) return;
+        const correctAnswer = this.currentCorrectAnswer;
+        this.currentAnswer = correctAnswer;
+        this.currentColor = this.getColorForAnswer(correctAnswer);
+        const colorRange = this.colorRanges.find(r => r.name === this.currentColor);
+        this.questionText.textContent = this.questionText.textContent.replace(' (Computer\'s turn...)', '');
+        this.answerValue.textContent = 'Computer: ' + correctAnswer;
+        this.answerColor.textContent = colorRange.name.toUpperCase();
+        this.answerColor.style.background = colorRange.color;
+        this.answerColor.style.color = colorRange.name === 'black' ? 'white' : 'black';
+        this.pickCirclePrompt.textContent = 'Computer picks a circle...';
+        this.answerResult.style.display = 'block';
+        this.answerInput.disabled = true;
+        this.submitAnswerBtn.disabled = true;
+        this.waitingForCirclePick = true;
+        setTimeout(() => this.computerPickCircle(), 1200);
     }
 
     createQuestion() {
@@ -321,9 +353,8 @@ class MimiMemoryChess {
         const correctAnswer = this.currentCorrectAnswer;
         
         if (userAnswer !== correctAnswer) {
-            alert(`Incorrect! The answer is ${correctAnswer}. Try again!`);
-            this.answerInput.value = '';
-            this.answerInput.focus();
+            alert(`Wrong! The answer was ${correctAnswer}. Next player's turn.`);
+            this.nextTurn(false);
             return;
         }
         
@@ -344,11 +375,6 @@ class MimiMemoryChess {
         this.answerInput.disabled = true;
         this.submitAnswerBtn.disabled = true;
         this.waitingForCirclePick = true;
-        
-        // If computer's turn, auto-pick
-        if (this.currentPlayer === 2 && this.playerMode === 1) {
-            setTimeout(() => this.computerPickCircle(), 1000);
-        }
     }
 
     pickCircle(circleId) {
