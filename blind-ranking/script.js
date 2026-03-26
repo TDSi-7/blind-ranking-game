@@ -1005,7 +1005,13 @@ class BlindRankingGame {
         }
         this.gamesPlayedDisplay.textContent = this.playerStats.gamesPlayed;
         this.playerHighScoreDisplay.textContent = this.playerStats.highScore;
-        const average = this.playerStats.gamesPlayed > 0 ? (this.playerStats.totalScore / this.playerStats.gamesPlayed).toFixed(1) : '0';
+        let average = '0';
+        if (this.playerStats.gamesPlayed > 0) {
+            const rawAverage = this.playerStats.totalScore / this.playerStats.gamesPlayed;
+            average = Number.isFinite(rawAverage)
+                ? rawAverage.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2, useGrouping: false })
+                : '0';
+        }
         this.averageScoreDisplay.textContent = average;
     }
 }

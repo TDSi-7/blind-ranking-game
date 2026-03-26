@@ -219,6 +219,31 @@
         });
     }
 
+    function refreshStateFromAuth(viewLeaderboard) {
+        return checkDailyState().then(function (state) {
+            var profileNamePromise = (window.JonesGamesSync && window.JonesGamesSync.getProfile)
+                ? window.JonesGamesSync.getProfile().then(function (p) { return (p && p.display_name) ? p.display_name : null; }).catch(function () { return null; })
+                : Promise.resolve(null);
+            return profileNamePromise.then(function (profileName) {
+                if (profileName) lastAttemptDisplayName = profileName;
+                return state;
+            });
+        }).then(function (state) {
+            return checkAdminAccess().then(function (isAdmin) {
+                isCurrentUserAdmin = isAdmin;
+                updateAdminResetControls();
+                return state;
+            });
+        }).then(function (state) {
+            if (state.completedToday) {
+                hasCompletedTodayThisSession = true;
+                lastAttemptRecord = state.myCompletion || null;
+                if (state.myCompletion && state.myCompletion.display_name) lastAttemptDisplayName = state.myCompletion.display_name;
+            }
+            applyView(state, viewLeaderboard);
+        });
+    }
+
     function renderRecordRows(rows) {
         return (rows || []).map(function (row, i) {
             var name = escapeHtml(row.display_name || 'Player');
@@ -673,32 +698,17 @@
 
         var viewLeaderboard = typeof window !== 'undefined' && window.location && window.location.search && window.location.search.indexOf('view=leaderboard') !== -1;
         (window.__JonesGamesAuthInit__ ? window.__JonesGamesAuthInit__() : Promise.resolve()).then(function () {
-            return checkDailyState();
-        }).then(function (state) {
-            var profileNamePromise = (window.JonesGamesSync && window.JonesGamesSync.getProfile)
-                ? window.JonesGamesSync.getProfile().then(function (p) { return (p && p.display_name) ? p.display_name : null; }).catch(function () { return null; })
-                : Promise.resolve(null);
-            return profileNamePromise.then(function (profileName) {
-                if (profileName) lastAttemptDisplayName = profileName;
-                return state;
-            });
-        }).then(function (state) {
-            return checkAdminAccess().then(function (isAdmin) {
-                isCurrentUserAdmin = isAdmin;
-                updateAdminResetControls();
-                return state;
-            });
-        }).then(function (state) {
-            if (state.completedToday) {
-                hasCompletedTodayThisSession = true;
-                lastAttemptRecord = state.myCompletion || null;
-                if (state.myCompletion && state.myCompletion.display_name) lastAttemptDisplayName = state.myCompletion.display_name;
-            }
-            applyView(state, viewLeaderboard);
+            return refreshStateFromAuth(viewLeaderboard);
         });
+        if (Auth && Auth.onAuthStateChange) {
+            Auth.onAuthStateChange(function () {
+                if (gameActive) return;
+                refreshStateFromAuth(viewLeaderboard);
+            });
+        }
 
         var playChallengeLink = getEl('playChallengeFromLeaderboardLink');
-        if (playChallengeLink) playChallengeLink.href = 'index.html?v=20260326f';
+        if (playChallengeLink) playChallengeLink.href = 'index.html?v=20260326g';
 
         startBtn.addEventListener('click', startGame);
         nextNumberBtn.addEventListener('click', showNextNumber);
