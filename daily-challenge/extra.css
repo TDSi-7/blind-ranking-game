@@ -139,6 +139,14 @@
 #alreadyCompletedScreen .daily-leaderboard {
     margin-top: 16px;
 }
+.admin-reset-controls {
+    margin-top: 10px;
+}
+.admin-reset-status {
+    margin-top: 8px;
+    font-size: 0.9em;
+    color: #475569;
+}
 #completeToSeeLeaderboardScreen .btn-back-home-inline {
     display: inline-block;
     margin-top: 16px;

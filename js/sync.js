@@ -143,7 +143,11 @@
             var avatarUrl = meta.avatar_url || meta.picture || null;
             return ensureClient().then(function (client) {
                 if (!client) return Promise.resolve();
-                return upsertProfile(client, userId, displayName, avatarUrl).then(function () {
+                return client.from('profiles').select('display_name').eq('id', userId).maybeSingle().then(function (profileRes) {
+                    var existingName = profileRes && profileRes.data && profileRes.data.display_name;
+                    var effectiveName = existingName || displayName;
+                    return upsertProfile(client, userId, effectiveName, avatarUrl);
+                }).then(function () {
                     return pullStats(client, userId);
                 }).then(function (pullResult) {
                     var dbStats = pullResult.byGame || {};

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daily Challenge – Blind Ranking</title>
     <link rel="stylesheet" href="../blind-ranking/style.css">
-    <link rel="stylesheet" href="extra.css?v=20260326d">
+    <link rel="stylesheet" href="extra.css?v=20260326f">
 </head>
 <body>
     <div class="container">
@@ -25,6 +25,10 @@
             <h1>Daily Challenge</h1>
             <p class="subtitle">You've already played today's challenge.</p>
             <p id="alreadyCompletedTime" class="daily-time"></p>
+            <div id="adminResetControls" class="admin-reset-controls" style="display: none;">
+                <button id="adminResetTodayBtn" class="btn btn-secondary" type="button">Admin: Reset today for all users</button>
+                <p id="adminResetStatus" class="admin-reset-status"></p>
+            </div>
             <div id="alreadyCompletedLeaderboard" class="daily-leaderboard">
                 <h3>Today's records</h3>
                 <div class="daily-records-wrap">
@@ -150,6 +154,6 @@
     <script src="../js/config.js"></script>
     <script src="../js/auth.js"></script>
     <script src="../js/sync.js"></script>
-    <script src="script.js?v=20260326d"></script>
+    <script src="script.js?v=20260326f"></script>
 </body>
 </html>

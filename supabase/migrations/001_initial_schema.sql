@@ -63,15 +63,9 @@ CREATE POLICY "Users can insert own daily completion"
 CREATE POLICY "Users can update own daily completion"
     ON public.daily_challenge_completions FOR UPDATE USING (auth.uid() = user_id);
 
--- Users can read rows only for dates they have completed (so they can see that day's leaderboard)
-CREATE POLICY "Users can read leaderboard for dates they completed"
-    ON public.daily_challenge_completions FOR SELECT USING (
-        EXISTS (
-            SELECT 1 FROM public.daily_challenge_completions d2
-            WHERE d2.date = daily_challenge_completions.date
-              AND d2.user_id = auth.uid()
-        )
-    );
+-- Authenticated users can read daily records leaderboard rows.
+CREATE POLICY "Authenticated users can read daily leaderboard"
+    ON public.daily_challenge_completions FOR SELECT USING (auth.role() = 'authenticated');
 
 -- Backfill score when running against an existing table created before this column existed.
 ALTER TABLE public.daily_challenge_completions

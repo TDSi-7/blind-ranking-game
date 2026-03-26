@@ -75,6 +75,7 @@
     var startScreen, gameScreen, gameOverScreen;
     var loginRequiredScreen, alreadyCompletedScreen, completeToSeeLeaderboardScreen;
     var alreadyCompletedTimeEl, alreadyCompletedLeaderboardListEl;
+    var adminResetControlsEl, adminResetTodayBtnEl, adminResetStatusEl;
     var startBtn, nextNumberBtn;
     var dailyStatusBannerEl;
     var currentNumberEl, numbersPlacedEl, timerDisplayEl, gameTitleEl;
@@ -99,6 +100,7 @@
     var lastAttemptDisplayName = 'Player';
     var attemptLockUserId = null;
     var ATTEMPT_LOCK_KEY = 'daily_challenge_attempt_lock_v1';
+    var isCurrentUserAdmin = false;
 
     function getEl(id) { return document.getElementById(id); }
 
@@ -136,6 +138,15 @@
         saveAttemptLockMap(map);
     }
 
+    function clearLocalAttemptLock(userId, dateStr) {
+        if (!userId || !dateStr) return;
+        var map = getAttemptLockMap();
+        if (!map[userId] || !map[userId][dateStr]) return;
+        delete map[userId][dateStr];
+        if (Object.keys(map[userId]).length === 0) delete map[userId];
+        saveAttemptLockMap(map);
+    }
+
     var allScreens = [];
 
     function showScreen(name) {
@@ -170,6 +181,42 @@
             alreadyCompletedTimeEl.textContent = 'Your result: ' + myScore + '/10 in ' + myDuration;
         }
         loadLeaderboardInto(getTodayDateUTC(), alreadyCompletedLeaderboardListEl);
+    }
+
+    function updateAdminResetControls() {
+        if (!adminResetControlsEl) return;
+        adminResetControlsEl.style.display = isCurrentUserAdmin ? 'block' : 'none';
+    }
+
+    function checkAdminAccess() {
+        var client = Auth.getClient();
+        if (!client) return Promise.resolve(false);
+        return client.rpc('is_current_user_admin').then(function (res) {
+            if (res.error) return false;
+            return !!res.data;
+        }).catch(function () { return false; });
+    }
+
+    function runAdminResetToday() {
+        if (!isCurrentUserAdmin) return;
+        if (!confirm('Reset today\\'s Daily Challenge for all users?')) return;
+        var client = Auth.getClient();
+        if (!client) return;
+        if (adminResetStatusEl) adminResetStatusEl.textContent = 'Resetting today...';
+        client.rpc('admin_reset_daily_challenge', { target_date: getTodayDateUTC() }).then(function (res) {
+            if (res.error) {
+                if (adminResetStatusEl) adminResetStatusEl.textContent = 'Reset failed: ' + (res.error.message || 'unknown error');
+                return;
+            }
+            if (adminResetStatusEl) adminResetStatusEl.textContent = 'Reset complete. Removed ' + (res.data || 0) + ' rows.';
+            if (attemptLockUserId) clearLocalAttemptLock(attemptLockUserId, getTodayDateUTC());
+            hasCompletedTodayThisSession = false;
+            lastAttemptRecord = null;
+            updateStartStatusBanner(false, null);
+            showScreen('startScreen');
+        }).catch(function () {
+            if (adminResetStatusEl) adminResetStatusEl.textContent = 'Reset failed. Try again.';
+        });
     }
 
     function renderRecordRows(rows) {
@@ -600,6 +647,9 @@
         completeToSeeLeaderboardScreen = getEl('completeToSeeLeaderboardScreen');
         alreadyCompletedTimeEl = getEl('alreadyCompletedTime');
         alreadyCompletedLeaderboardListEl = getEl('alreadyCompletedLeaderboardList');
+        adminResetControlsEl = getEl('adminResetControls');
+        adminResetTodayBtnEl = getEl('adminResetTodayBtn');
+        adminResetStatusEl = getEl('adminResetStatus');
         allScreens = [startScreen, gameScreen, gameOverScreen, loginRequiredScreen, alreadyCompletedScreen, completeToSeeLeaderboardScreen];
         startBtn = getEl('startBtn');
         nextNumberBtn = getEl('nextNumberBtn');
@@ -633,6 +683,12 @@
                 return state;
             });
         }).then(function (state) {
+            return checkAdminAccess().then(function (isAdmin) {
+                isCurrentUserAdmin = isAdmin;
+                updateAdminResetControls();
+                return state;
+            });
+        }).then(function (state) {
             if (state.completedToday) {
                 hasCompletedTodayThisSession = true;
                 lastAttemptRecord = state.myCompletion || null;
@@ -642,10 +698,11 @@
         });
 
         var playChallengeLink = getEl('playChallengeFromLeaderboardLink');
-        if (playChallengeLink) playChallengeLink.href = 'index.html?v=20260326d';
+        if (playChallengeLink) playChallengeLink.href = 'index.html?v=20260326f';
 
         startBtn.addEventListener('click', startGame);
         nextNumberBtn.addEventListener('click', showNextNumber);
+        if (adminResetTodayBtnEl) adminResetTodayBtnEl.addEventListener('click', runAdminResetToday);
         slotElements = document.querySelectorAll('.slot');
         slotElements.forEach(function (slot) {
             slot.addEventListener('click', function (e) {
@@ -691,7 +748,11 @@
                 slotElements.forEach(function (s) { s.classList.remove('drag-over', 'dragging'); });
                 dragSourceSlotIndex = null;
                 if (src !== tgt && slots[tgt] === null && slots[src] !== null) {
-                    if (canPlaceInSlot(tgt, slots[src])) performMove(src, tgt);
+                    var n = slots[src];
+                    slots[src] = null;
+                    var canPlace = canPlaceInSlot(tgt, n);
+                    slots[src] = n;
+                    if (canPlace) performMove(src, tgt);
                 }
             });
             slot.addEventListener('dragend', function () {
