@@ -10,7 +10,8 @@
       "ageRange": "8-12",
       "color": "#2196F3",
       "featured": true,
-      "creator": "Alex"
+      "creator": "Alex",
+      "freePlay": true
     },
     {
       "id": "mimi-memory-chess",
@@ -22,7 +23,21 @@
       "ageRange": "8-12",
       "color": "#FF9800",
       "featured": true,
-      "creator": "Mimi"
+      "creator": "Mimi",
+      "freePlay": true
+    },
+    {
+      "id": "daily-challenge",
+      "name": "Daily Challenge",
+      "folder": "daily-challenge",
+      "description": "One Blind Ranking puzzle per day. Same for everyone—compete on the leaderboard.",
+      "icon": "📅",
+      "difficultyLevels": [],
+      "ageRange": "8-12",
+      "color": "#4caf50",
+      "featured": true,
+      "creator": "Jones Games",
+      "freePlay": false
     }
   ]
 }

@@ -11,14 +11,142 @@ document.addEventListener('DOMContentLoaded', () => {
     const cancelNewProfileBtn = document.getElementById('cancelNewProfileBtn');
     const statsSummary = document.getElementById('statsSummary');
     const statsSummaryContent = document.getElementById('statsSummaryContent');
+    const authSection = document.getElementById('authSection');
+    const authGuest = document.getElementById('authGuest');
+    const authLoggedIn = document.getElementById('authLoggedIn');
+    const signInWithGoogleBtn = document.getElementById('signInWithGoogleBtn');
+    const signOutBtn = document.getElementById('signOutBtn');
+    const authAvatar = document.getElementById('authAvatar');
+    const authDisplayName = document.getElementById('authDisplayName');
+    const profileSection = document.getElementById('profileSection');
+    const authNote = document.getElementById('authNote');
+    const settingsBtn = document.getElementById('settingsBtn');
+    const settingsModal = document.getElementById('settingsModal');
+    const settingsNickname = document.getElementById('settingsNickname');
+    const settingsSaveBtn = document.getElementById('settingsSaveBtn');
+    const settingsCloseBtn = document.getElementById('settingsCloseBtn');
+    const settingsModalBackdrop = settingsModal && settingsModal.querySelector('.settings-modal-backdrop');
 
     const Hub = window.FunGamesHubProfiles;
+    const Auth = window.JonesGamesAuth;
+    const DAILY_CHALLENGE_ASSET_VERSION = '20260326d';
+    function getGameUrl(game) {
+        if (game && game.id === 'daily-challenge') {
+            return game.folder + '/index.html?v=' + DAILY_CHALLENGE_ASSET_VERSION;
+        }
+        return game.folder + '/index.html';
+    }
+
+
     if (!Hub) {
         console.error('FunGamesHubProfiles not loaded');
     } else {
         Hub.ensureCurrentProfile();
         renderProfileSelect();
         renderStatsSummary();
+    }
+
+    function setDisplayName(name) {
+        if (authDisplayName) authDisplayName.textContent = name || 'Player';
+    }
+
+    function renderAuth(session) {
+        if (!authSection || !authGuest || !authLoggedIn) return;
+        authSection.style.display = 'block';
+        if (session && session.user) {
+            authGuest.style.display = 'none';
+            authLoggedIn.style.display = 'flex';
+            if (profileSection) profileSection.style.display = 'none';
+            var u = session.user.user_metadata || {};
+            var fallbackName = u.full_name || u.name || session.user.email || 'Player';
+            if (authAvatar) {
+                authAvatar.src = u.avatar_url || u.picture || '';
+                authAvatar.alt = fallbackName;
+                authAvatar.style.display = (u.avatar_url || u.picture) ? '' : 'none';
+            }
+            setDisplayName(fallbackName);
+            if (authNote) authNote.style.display = 'none';
+            if (window.JonesGamesSync) {
+                if (window.JonesGamesSync.syncWithServer) {
+                    window.JonesGamesSync.syncWithServer().then(function () {
+                        if (Hub) renderStatsSummary();
+                    });
+                }
+                if (window.JonesGamesSync.getProfile) {
+                    window.JonesGamesSync.getProfile().then(function (profile) {
+                        if (profile && profile.display_name) setDisplayName(profile.display_name);
+                    });
+                }
+            }
+        } else {
+            authLoggedIn.style.display = 'none';
+            authGuest.style.display = 'flex';
+            if (profileSection) profileSection.style.display = 'block';
+            if (signInWithGoogleBtn) signInWithGoogleBtn.style.display = Auth && Auth.isConfigured() ? 'inline-flex' : 'none';
+            if (authNote) authNote.style.display = Auth && Auth.isConfigured() ? 'block' : 'none';
+        }
+    }
+
+    function openSettingsModal() {
+        if (!settingsModal || !settingsNickname) return;
+        settingsModal.style.display = 'flex';
+        if (window.JonesGamesSync && window.JonesGamesSync.getProfile) {
+            window.JonesGamesSync.getProfile().then(function (profile) {
+                settingsNickname.value = (profile && profile.display_name) ? profile.display_name : '';
+                settingsNickname.focus();
+            });
+        } else {
+            settingsNickname.value = '';
+            settingsNickname.focus();
+        }
+    }
+
+    function closeSettingsModal() {
+        if (settingsModal) settingsModal.style.display = 'none';
+    }
+
+    function saveSettings() {
+        var nickname = settingsNickname && settingsNickname.value.trim();
+        if (!window.JonesGamesSync || !window.JonesGamesSync.updateProfile) return;
+        window.JonesGamesSync.updateProfile({ display_name: nickname || 'Player' }).then(function () {
+            setDisplayName(nickname || 'Player');
+            closeSettingsModal();
+        }).catch(function (err) {
+            console.error('Settings save failed', err);
+            alert('Could not save. Please try again.');
+        });
+    }
+
+    if (settingsBtn) settingsBtn.addEventListener('click', openSettingsModal);
+    if (settingsSaveBtn) settingsSaveBtn.addEventListener('click', saveSettings);
+    if (settingsCloseBtn) settingsCloseBtn.addEventListener('click', closeSettingsModal);
+    if (settingsModalBackdrop) settingsModalBackdrop.addEventListener('click', closeSettingsModal);
+
+    if (Auth) {
+        (window.__JonesGamesAuthInit__ || (function () { return Promise.resolve(); }))()
+            .then(function () { return Auth.getSession(); })
+            .then(function (session) {
+                renderAuth(session ? session : null);
+            })
+            .catch(function () { renderAuth(null); });
+        Auth.onAuthStateChange(function (session) {
+            renderAuth(session || null);
+        });
+    }
+
+    if (signInWithGoogleBtn) {
+        signInWithGoogleBtn.addEventListener('click', function () {
+            if (!Auth || !Auth.isConfigured()) return;
+            Auth.signInWithGoogle().catch(function (err) {
+                console.error('Sign in failed', err);
+                alert('Sign in failed. Please try again.');
+            });
+        });
+    }
+    if (signOutBtn) {
+        signOutBtn.addEventListener('click', function () {
+            if (Auth) Auth.signOut();
+        });
     }
 
     function renderProfileSelect() {
@@ -124,35 +252,35 @@ document.addEventListener('DOMContentLoaded', () => {
             const card = document.querySelector(`[data-game-id="${game.id}"]`);
             if (card) {
                 card.addEventListener('click', () => {
-                    window.location.href = `${game.folder}/index.html`;
+                    window.location.href = getGameUrl(game);
                 });
             }
         });
     }
 
     function createGameCard(game) {
-        const difficultyBadges = game.difficultyLevels.map(level => {
-            const levelLower = level.toLowerCase();
-            return `<span class="difficulty-badge ${levelLower}">${level}</span>`;
+        var difficultyBadges = (game.difficultyLevels || []).map(function (level) {
+            var levelLower = level.toLowerCase();
+            return '<span class="difficulty-badge ' + levelLower + '">' + level + '</span>';
         }).join('');
+        if (game.freePlay) {
+            difficultyBadges = '<span class="difficulty-badge free-play">Free Play</span>' + difficultyBadges;
+        } else if (game.id === 'daily-challenge') {
+            difficultyBadges = '<span class="difficulty-badge daily">Daily</span>' + difficultyBadges;
+        }
 
-        const featuredClass = game.featured ? 'featured' : '';
-        const cardColor = game.color || '#2196F3';
-        const creatorTag = game.creator ? `<div class="creator-tag" style="--creator-accent: ${cardColor}">By ${game.creator}</div>` : '';
+        var featuredClass = game.featured ? 'featured' : '';
+        var cardColor = game.color || '#2196F3';
+        var creatorTag = game.creator ? '<div class="creator-tag" style="--creator-accent: ' + cardColor + '">By ' + escapeHtml(game.creator) + '</div>' : '';
 
-        return `
-            <a href="${game.folder}/index.html" class="game-card ${featuredClass}" data-game-id="${game.id}" style="--card-color: ${cardColor}">
-                ${creatorTag}
-                <div class="game-icon">${game.icon || '🎮'}</div>
-                <h2 class="game-name">${game.name}</h2>
-                <p class="game-description">${game.description}</p>
-                <div class="game-meta">
-                    <span class="game-age-range">Ages ${game.ageRange}</span>
-                    <div class="game-difficulties">
-                        ${difficultyBadges}
-                    </div>
-                </div>
-            </a>
-        `;
+        return '<a href="' + getGameUrl(game) + '" class="game-card ' + featuredClass + '" data-game-id="' + game.id + '" style="--card-color: ' + cardColor + '">' +
+            creatorTag +
+            '<div class="game-icon">' + (game.icon || '🎮') + '</div>' +
+            '<h2 class="game-name">' + escapeHtml(game.name) + '</h2>' +
+            '<p class="game-description">' + escapeHtml(game.description) + '</p>' +
+            '<div class="game-meta">' +
+            '<span class="game-age-range">Ages ' + escapeHtml(game.ageRange || '') + '</span>' +
+            '<div class="game-difficulties">' + difficultyBadges + '</div>' +
+            '</div></a>';
     }
 });

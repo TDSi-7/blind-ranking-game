@@ -9,11 +9,44 @@
 <body>
     <div class="home-container">
         <header class="home-header">
-            <h1 class="site-title"><span class="title-emoji">🎮</span> Jones Games <span class="title-emoji">🎮</span></h1>
-            <p class="home-subtitle">Made by Team Jones</p>
-        </header>
+            <div class="header-left">
+                <h1 class="site-title"><span class="title-emoji">🎮</span> Jones Games <span class="title-emoji">🎮</span></h1>
+                <p class="home-subtitle">Made by Team Jones</p>
+            </div>
+            <div id="authSection" class="header-auth" style="display: none;">
+            <div id="authGuest" class="auth-guest" style="display: none;">
+                <button type="button" id="signInWithGoogleBtn" class="btn-login-top" style="display: none;">
+                    <span class="btn-google-icon"></span> Login
+                </button>
+            </div>
+            <div id="authLoggedIn" class="auth-logged-in" style="display: none;">
+                <img id="authAvatar" class="auth-avatar" src="" alt="" width="36" height="36">
+                <span id="authDisplayName" class="auth-display-name"></span>
+                <button type="button" id="settingsBtn" class="btn-settings" title="Settings" aria-label="Settings">
+                    <span class="settings-icon" aria-hidden="true"></span>
+                </button>
+                <button type="button" id="signOutBtn" class="btn-sign-out">Sign out</button>
+            </div>
+        </div>
 
-        <div class="profile-section">
+        <p id="authNote" class="auth-note" style="display: none;">Create an account and log in to keep a record of your progress and appear on the daily leaderboard.</p>
+
+        <div id="settingsModal" class="settings-modal" role="dialog" aria-labelledby="settingsModalTitle" aria-modal="true" style="display: none;">
+            <div class="settings-modal-backdrop"></div>
+            <div class="settings-modal-content">
+                <h2 id="settingsModalTitle" class="settings-modal-title">Settings</h2>
+                <div class="settings-form">
+                    <label for="settingsNickname">Nickname (shown on leaderboard)</label>
+                    <input type="text" id="settingsNickname" class="settings-nickname-input" placeholder="Your nickname" maxlength="32" autocomplete="off">
+                    <div class="settings-modal-actions">
+                        <button type="button" id="settingsSaveBtn" class="btn-settings-save">Save</button>
+                        <button type="button" id="settingsCloseBtn" class="btn-settings-close">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="profileSection" class="profile-section">
             <label for="profileSelect" class="profile-label">Playing as:</label>
             <div class="profile-row">
                 <select id="profileSelect" class="profile-select" aria-label="Select profile"></select>
@@ -34,6 +67,10 @@
         <div id="loadingMessage" class="loading-message">
             <p>Loading games...</p>
         </div>
+
+        <p class="daily-leaderboard-link-wrap">
+            <a href="daily-challenge/index.html?view=leaderboard&v=20260326d" class="daily-leaderboard-link">Daily challenge leaderboard</a>
+        </p>
         
         <div id="gamesContainer" class="games-container">
             <!-- Game cards will be dynamically inserted here -->
@@ -45,6 +82,10 @@
     </div>
     
     <script src="js/profiles.js"></script>
+    <!-- Optional: add Supabase URL + anon key in js/config.js (see js/config.example.js) -->
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/sync.js"></script>
     <script src="home.js"></script>
 </body>
 </html>

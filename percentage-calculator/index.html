@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TDS Percentage Calculator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="calculator-page">
+        <section class="calculator-card" aria-labelledby="calculatorTitle">
+            <header class="calculator-header">
+                <div class="brand-row">
+                    <img class="brand-logo" src="assets/tds-logo.png" alt="The Digital Stride logo">
+                </div>
+                <h1 id="calculatorTitle">TDS Percentage Calculator</h1>
+            </header>
+
+            <div class="calculator-section">
+                <div class="calculator-row">
+                    <label class="inline-formula" for="percentOfPercent">
+                        What is
+                        <input id="percentOfPercent" type="number" step="any" placeholder="Number" aria-label="Percent value">
+                        % of
+                        <input id="percentOfBase" type="number" step="any" placeholder="Number" aria-label="Base number">
+                        ?
+                    </label>
+                    <button id="percentOfBtn" type="button">Calculate</button>
+                    <input id="percentOfAnswer" class="answer-box" type="text" value="" readonly aria-label="First calculation answer">
+                </div>
+            </div>
+
+            <div class="calculator-section">
+                <div class="calculator-row">
+                    <label class="inline-formula" for="whatPercentValue">
+                        <input id="whatPercentValue" type="number" step="any" placeholder="Number" aria-label="Part value">
+                        is what percentage of
+                        <input id="whatPercentTotal" type="number" step="any" placeholder="Number" aria-label="Whole number">
+                        ?
+                    </label>
+                    <button id="whatPercentBtn" type="button">Calculate</button>
+                    <input id="whatPercentAnswer" class="answer-box" type="text" value="" readonly aria-label="Second calculation answer">
+                </div>
+            </div>
+
+            <div class="calculator-section">
+                <div class="calculator-row">
+                    <label class="inline-formula" for="changeFrom">
+                        What is the percentage increase/decrease from
+                        <input id="changeFrom" type="number" step="any" placeholder="Number" aria-label="From value">
+                        to
+                        <input id="changeTo" type="number" step="any" placeholder="Number" aria-label="To value">
+                        ?
+                    </label>
+                    <button id="changeBtn" type="button">Calculate</button>
+                    <input id="changeAnswer" class="answer-box" type="text" value="" readonly aria-label="Third calculation answer">
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

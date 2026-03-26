@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Challenge – Blind Ranking</title>
+    <link rel="stylesheet" href="../blind-ranking/style.css">
+    <link rel="stylesheet" href="extra.css?v=20260326d">
+</head>
+<body>
+    <div class="container">
+        <div class="back-to-home-container">
+            <a href="../index.html" class="btn-back-home">← Back to Home</a>
+        </div>
+
+        <div id="loginRequiredScreen" class="screen active">
+            <h1>Daily Challenge</h1>
+            <p class="subtitle">Sign in to play the daily challenge. You can only complete it once per day.</p>
+            <div class="daily-login-required-actions">
+                <a href="../index.html" class="btn btn-start">Log in</a>
+            </div>
+        </div>
+
+        <div id="alreadyCompletedScreen" class="screen">
+            <h1>Daily Challenge</h1>
+            <p class="subtitle">You've already played today's challenge.</p>
+            <p id="alreadyCompletedTime" class="daily-time"></p>
+            <div id="alreadyCompletedLeaderboard" class="daily-leaderboard">
+                <h3>Today's records</h3>
+                <div class="daily-records-wrap">
+                    <table class="daily-records-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Name</th>
+                                <th>Score</th>
+                                <th>Duration</th>
+                            </tr>
+                        </thead>
+                        <tbody id="alreadyCompletedLeaderboardList"></tbody>
+                    </table>
+                </div>
+            </div>
+            <a href="../index.html" class="btn btn-primary">Back to Home</a>
+        </div>
+
+        <div id="completeToSeeLeaderboardScreen" class="screen">
+            <h1>Daily Challenge Leaderboard</h1>
+            <p class="subtitle">Complete today's challenge to see the leaderboard.</p>
+            <div class="daily-login-required-actions">
+                <a href="index.html" id="playChallengeFromLeaderboardLink" class="btn btn-start">Play the challenge</a>
+            </div>
+            <a href="../index.html" class="btn btn-back-home-inline">Back to Home</a>
+        </div>
+
+        <div id="startScreen" class="screen">
+            <h1>Daily Challenge</h1>
+            <p class="subtitle">One Blind Ranking puzzle per day. Same for everyone. Fastest times on the leaderboard.</p>
+            <div class="start-form">
+                <p id="dailyDate" class="daily-date"></p>
+                <div id="dailyStatusBanner" class="daily-status-banner" style="display: none;"></div>
+                <div class="form-group start-button-group">
+                    <button id="startBtn" class="btn btn-start">Start today’s challenge</button>
+                </div>
+            </div>
+            <div class="instructions">
+                <h3 class="instructions-title">How to play</h3>
+                <ul class="instructions-list">
+                    <li><span class="bullet-label">1.</span> You’ll get 10 numbers (1–100) one at a time.</li>
+                    <li><span class="bullet-label">2.</span> Place each number in one of 10 slots so they end up in ascending order.</li>
+                    <li><span class="bullet-label">3.</span> You can move the last-placed number before clicking “Next number”.</li>
+                    <li><span class="bullet-label">4.</span> Fill all 10 slots to complete the challenge. Your time is recorded when you place the 10th number.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="gameScreen" class="screen">
+            <div class="game-header">
+                <a href="../index.html" class="header-home-link">Home</a>
+                <div class="game-header-spacer"></div>
+                <div class="game-header-center">
+                    <h2 id="gameTitle">Daily Challenge</h2>
+                    <div class="daily-one-attempt-pill">One Attempt Per Day</div>
+                    <div class="daily-timer">Time: <span id="timerDisplay">0:00</span></div>
+                </div>
+                <div class="difficulty-badge easy"><span class="difficulty-badge-label">1–100</span></div>
+            </div>
+            <div class="game-info">
+                <div class="current-number-display">
+                    <p class="label">Current number</p>
+                    <div id="currentNumber" class="number-display">-</div>
+                </div>
+                <div class="numbers-placed">
+                    <p class="numbers-placed-label">Numbers placed</p>
+                    <div class="numbers-placed-counter"><span id="numbersPlaced">0</span>/10</div>
+                </div>
+            </div>
+
+            <div class="slots-container">
+                <div class="slot" data-slot="1"><div class="slot-number">1</div><div class="slot-content" data-slot="1"></div></div>
+                <div class="slot" data-slot="2"><div class="slot-number">2</div><div class="slot-content" data-slot="2"></div></div>
+                <div class="slot" data-slot="3"><div class="slot-number">3</div><div class="slot-content" data-slot="3"></div></div>
+                <div class="slot" data-slot="4"><div class="slot-number">4</div><div class="slot-content" data-slot="4"></div></div>
+                <div class="slot" data-slot="5"><div class="slot-number">5</div><div class="slot-content" data-slot="5"></div></div>
+                <div class="slot" data-slot="6"><div class="slot-number">6</div><div class="slot-content" data-slot="6"></div></div>
+                <div class="slot" data-slot="7"><div class="slot-number">7</div><div class="slot-content" data-slot="7"></div></div>
+                <div class="slot" data-slot="8"><div class="slot-number">8</div><div class="slot-content" data-slot="8"></div></div>
+                <div class="slot" data-slot="9"><div class="slot-number">9</div><div class="slot-content" data-slot="9"></div></div>
+                <div class="slot" data-slot="10"><div class="slot-number">10</div><div class="slot-content" data-slot="10"></div></div>
+            </div>
+
+            <div class="game-controls">
+                <button id="nextNumberBtn" class="btn btn-primary" disabled>Next number</button>
+            </div>
+        </div>
+
+        <div id="gameOverScreen" class="screen">
+            <h1 id="gameOverTitle">Game over</h1>
+            <div class="score-display">
+                <p class="score-label">Your score</p>
+                <div id="finalScore" class="final-score-display">0</div>
+            </div>
+            <p id="gameOverMessage" class="message"></p>
+            <div id="completedSection" style="display: none;">
+                <p class="daily-time">Your duration: <strong id="completionTimeText"></strong></p>
+                <p id="leaderboardPrompt" class="daily-signin-prompt" style="display: none;">Sign in to save your result and see today's records.</p>
+                <div id="leaderboardContainer" class="daily-leaderboard" style="display: none;">
+                    <h3>Today’s records</h3>
+                    <div class="daily-records-wrap">
+                        <table class="daily-records-table">
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Name</th>
+                                    <th>Score</th>
+                                    <th>Duration</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leaderboardList"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="game-over-controls">
+                <a href="../index.html" class="btn btn-back-home-inline">Back to Home</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/sync.js"></script>
+    <script src="script.js?v=20260326d"></script>
+</body>
+</html>

@@ -2,6 +2,16 @@
 
 A game hub hosting multiple games for children aged 8-12. Made by Team Jones.
 
+## Login and Supabase
+
+The **Login** button (top right) uses Google sign-in. To enable it:
+
+1. Create a project at [supabase.com](https://supabase.com).
+2. Enable Google in **Authentication → Providers** and add your project URL + anon key in **`js/config.js`** (see **`js/config.example.js`**).
+3. Run the SQL in **`supabase/migrations/001_initial_schema.sql`** in the Supabase SQL Editor for stats sync and the Daily Challenge leaderboard.
+
+Full step-by-step: **[docs/SUPABASE_SETUP.md](docs/SUPABASE_SETUP.md)**.
+
 ## Deployment on Vercel
 
 This project is configured to deploy on Vercel. You can deploy in two ways:
