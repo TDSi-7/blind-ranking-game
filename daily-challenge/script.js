@@ -75,6 +75,7 @@
     var startScreen, gameScreen, gameOverScreen;
     var loginRequiredScreen, alreadyCompletedScreen, completeToSeeLeaderboardScreen;
     var alreadyCompletedTimeEl, alreadyCompletedLeaderboardListEl;
+    var loginRequiredActionLinkEl;
     var adminResetControlsEl, adminResetTodayBtnEl, adminResetStatusEl;
     var startBtn, nextNumberBtn;
     var dailyStatusBannerEl;
@@ -103,6 +104,46 @@
     var isCurrentUserAdmin = false;
 
     function getEl(id) { return document.getElementById(id); }
+
+    function sleep(ms) {
+        return new Promise(function (resolve) { setTimeout(resolve, ms); });
+    }
+
+    function getSessionWithRetry(retries, delayMs) {
+        if (!Auth || !Auth.getSession) return Promise.resolve(null);
+        var ensureInit = Promise.resolve();
+        if (Auth.getClient && !Auth.getClient() && window.__JonesGamesAuthInit__) {
+            ensureInit = window.__JonesGamesAuthInit__().catch(function () {});
+        }
+        return ensureInit.then(function () {
+            return Auth.getSession();
+        }).then(function (session) {
+            if (session) return session;
+            if (Auth.getUser) {
+                return Auth.getUser().then(function (user) {
+                    if (user) return { user: user };
+                    if (retries <= 0) return null;
+                    return sleep(delayMs).then(function () {
+                        return getSessionWithRetry(retries - 1, delayMs);
+                    });
+                }).catch(function () {
+                    if (retries <= 0) return null;
+                    return sleep(delayMs).then(function () {
+                        return getSessionWithRetry(retries - 1, delayMs);
+                    });
+                });
+            }
+            if (retries <= 0) return null;
+            return sleep(delayMs).then(function () {
+                return getSessionWithRetry(retries - 1, delayMs);
+            });
+        }).catch(function () {
+            if (retries <= 0) return null;
+            return sleep(delayMs).then(function () {
+                return getSessionWithRetry(retries - 1, delayMs);
+            });
+        });
+    }
 
     function getAttemptLockMap() {
         try {
@@ -156,7 +197,7 @@
     }
 
     function checkDailyState() {
-        return Auth.getSession().then(function (session) {
+        return getSessionWithRetry(20, 250).then(function (session) {
             if (!session || !session.user) return { loggedIn: false, completedToday: false, myCompletion: null };
             attemptLockUserId = session.user.id;
             var client = Auth.getClient();
@@ -169,6 +210,8 @@
                 var data = res.data;
                 var completion = data || localLock || null;
                 return { loggedIn: true, completedToday: !!completion, myCompletion: completion };
+            }).catch(function () {
+                return { loggedIn: true, completedToday: !!localLock, myCompletion: localLock };
             });
         }).catch(function () { return { loggedIn: false, completedToday: false, myCompletion: null }; });
     }
@@ -199,7 +242,7 @@
 
     function runAdminResetToday() {
         if (!isCurrentUserAdmin) return;
-        if (!confirm('Reset today\\'s Daily Challenge for all users?')) return;
+        if (!confirm('Reset today\'s Daily Challenge for all users?')) return;
         var client = Auth.getClient();
         if (!client) return;
         if (adminResetStatusEl) adminResetStatusEl.textContent = 'Resetting today...';
@@ -668,6 +711,7 @@
         gameScreen = getEl('gameScreen');
         gameOverScreen = getEl('gameOverScreen');
         loginRequiredScreen = getEl('loginRequiredScreen');
+        loginRequiredActionLinkEl = loginRequiredScreen ? loginRequiredScreen.querySelector('.btn-start') : null;
         alreadyCompletedScreen = getEl('alreadyCompletedScreen');
         completeToSeeLeaderboardScreen = getEl('completeToSeeLeaderboardScreen');
         alreadyCompletedTimeEl = getEl('alreadyCompletedTime');
@@ -708,10 +752,20 @@
         }
 
         var playChallengeLink = getEl('playChallengeFromLeaderboardLink');
-        if (playChallengeLink) playChallengeLink.href = 'index.html?v=20260326g';
+        if (playChallengeLink) playChallengeLink.href = 'index.html?v=20260326j';
 
         startBtn.addEventListener('click', startGame);
         nextNumberBtn.addEventListener('click', showNextNumber);
+        if (loginRequiredActionLinkEl) {
+            loginRequiredActionLinkEl.addEventListener('click', function (e) {
+                e.preventDefault();
+                refreshStateFromAuth(false).then(function () {
+                    if (startScreen && startScreen.classList.contains('active')) return;
+                    if (alreadyCompletedScreen && alreadyCompletedScreen.classList.contains('active')) return;
+                    window.location.href = '../index.html';
+                });
+            });
+        }
         if (adminResetTodayBtnEl) adminResetTodayBtnEl.addEventListener('click', runAdminResetToday);
         slotElements = document.querySelectorAll('.slot');
         slotElements.forEach(function (slot) {

@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const Hub = window.FunGamesHubProfiles;
     const Auth = window.JonesGamesAuth;
-    const DAILY_CHALLENGE_ASSET_VERSION = '20260326g';
+    const DAILY_CHALLENGE_ASSET_VERSION = '20260326j';
     function getGameUrl(game) {
         if (game && game.id === 'daily-challenge') {
             return game.folder + '/index.html?v=' + DAILY_CHALLENGE_ASSET_VERSION;
