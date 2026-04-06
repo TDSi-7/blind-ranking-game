@@ -15,6 +15,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var Auth = window.JonesGamesAuth;
     var DAILY_CHALLENGE_ASSET_VERSION = '20260326k';
+    /** Bump when games.json changes so CDN/browsers fetch the new catalog. */
+    var GAMES_CATALOG_VERSION = '20260407a';
     var isLoggedIn = false;
 
     function escapeHtml(s) {
@@ -241,7 +243,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    fetch('games.json')
+    fetch('games.json?v=' + encodeURIComponent(GAMES_CATALOG_VERSION))
         .then(function (response) {
             if (!response.ok) throw new Error('Failed to load games');
             return response.json();
