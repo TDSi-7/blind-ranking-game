@@ -14,6 +14,19 @@
       "freePlay": true
     },
     {
+      "id": "higher-or-lower",
+      "name": "Higher or Lower",
+      "folder": "higher-or-lower",
+      "description": "Guess if the next hidden card is higher or lower than yours. Ace is low, King is high—how far can you go?",
+      "icon": "🃏",
+      "difficultyLevels": ["Easy", "Medium", "Hard"],
+      "ageRange": "8-12",
+      "color": "#2563eb",
+      "featured": true,
+      "creator": "Alex",
+      "freePlay": true
+    },
+    {
       "id": "mimi-memory-chess",
       "name": "Mimi's Memory Chess",
       "folder": "mimi-memory-chess",

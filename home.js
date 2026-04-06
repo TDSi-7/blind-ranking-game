@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var Auth = window.JonesGamesAuth;
     var DAILY_CHALLENGE_ASSET_VERSION = '20260326k';
     /** Bump when games.json changes so CDN/browsers fetch the new catalog. */
-    var GAMES_CATALOG_VERSION = '20260407b';
+    var GAMES_CATALOG_VERSION = '20260407f';
     var isLoggedIn = false;
 
     function escapeHtml(s) {

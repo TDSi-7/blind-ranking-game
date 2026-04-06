@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Higher or Lower</title>
+    <link rel="icon" type="image/png" href="../blind-ranking/assets/branding/Gemini_Generated_Image_szjltrszjltrszjl.png">
+    <link rel="stylesheet" href="style.css?v=20260407e">
+</head>
+<body>
+    <div class="container">
+        <div class="back-to-home-container">
+            <a href="../index.html" class="btn-back-home">← Back to Home</a>
+        </div>
+
+        <div id="startScreen" class="screen active">
+            <h1>Higher or Lower</h1>
+            <p class="subtitle">Will the next hidden card beat yours? Ace is low, King is high.</p>
+            <div class="start-form">
+                <div class="form-group">
+                    <label id="difficultyLabelStart">Difficulty (cards in the row)</label>
+                    <div class="option-buttons" id="difficultyOptions" role="group" aria-labelledby="difficultyLabelStart">
+                        <button type="button" class="btn-option" data-difficulty="easy">Easy — 5 cards</button>
+                        <button type="button" class="btn-option" data-difficulty="medium">Medium — 7 cards</button>
+                        <button type="button" class="btn-option" data-difficulty="hard">Hard — 10 cards</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Best streak (correct guesses in a row)</label>
+                    <div class="streak-stats-card" aria-label="Best streak by difficulty">
+                        <table class="streak-stats-table">
+                            <thead>
+                                <tr>
+                                    <th>Difficulty</th>
+                                    <th>Best</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="difficulty-name">Easy</td>
+                                    <td><span id="bestEasy">0</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="difficulty-name">Medium</td>
+                                    <td><span id="bestMedium">0</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="difficulty-name">Hard</td>
+                                    <td><span id="bestHard">0</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="form-group start-button-group">
+                    <button type="button" id="startBtn" class="btn btn-start" disabled>Start game</button>
+                </div>
+            </div>
+            <div class="instructions">
+                <h3 class="instructions-title">How to play</h3>
+                <ul class="instructions-list">
+                    <li>
+                        <span class="bullet-label">1.</span>
+                        <span class="instructions-list__text">You start with one face-up card and a row of face-down cards (5, 7, or 10, by difficulty).</span>
+                    </li>
+                    <li>
+                        <span class="bullet-label">2.</span>
+                        <span class="instructions-list__text">Guess if the <strong>next</strong> face-down card is higher or lower than your rightmost card. Each time you are right, that card is added to your row on the right.</span>
+                    </li>
+                    <li>
+                        <span class="bullet-label">3.</span>
+                        <span class="instructions-list__text">Card order is Ace (low) through King (high). Suits do not matter.</span>
+                    </li>
+                    <li>
+                        <span class="bullet-label">4.</span>
+                        <span class="instructions-list__text">If the next card is the <strong>same rank</strong>, it flips for free and joins your row. That does not add to your streak.</span>
+                    </li>
+                    <li>
+                        <span class="bullet-label">5.</span>
+                        <span class="instructions-list__text">A wrong guess shows the card, then after a short pause the game ends. Clear the whole row to win.</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="gameScreen" class="screen">
+            <div class="game-header">
+                <h2>Higher or Lower</h2>
+                <div class="game-meta-bar">
+                    <span id="difficultyLabel" class="meta-pill"></span>
+                    <span id="streakLabel" class="meta-pill" aria-live="polite">Streak: 0</span>
+                </div>
+                <p id="statusMessage" class="status-message" role="status" aria-live="assertive"></p>
+            </div>
+
+            <div class="play-area">
+                <div class="current-wrap">
+                    <div class="current-label" id="currentLabel">Your cards (newest on the right)</div>
+                    <div id="chainCards" class="chain-cards" role="group" aria-label="Cards played this round"></div>
+                </div>
+
+                <div class="row-wrap">
+                    <div class="row-label">Hidden row — guess left to right</div>
+                    <div id="tableRow" class="table-row" role="group" aria-label="Hidden cards"></div>
+                </div>
+
+                <div class="guess-actions" role="group" aria-label="Higher or lower">
+                    <button type="button" id="higherBtn" class="btn btn-higher" disabled>Higher</button>
+                    <button type="button" id="lowerBtn" class="btn btn-lower" disabled>Lower</button>
+                </div>
+            </div>
+
+            <div class="game-controls">
+                <button type="button" id="newGameBtn" class="btn btn-outline">New game (same difficulty)</button>
+                <button type="button" id="changeDifficultyBtn" class="btn btn-outline">Change difficulty</button>
+            </div>
+        </div>
+
+        <div id="gameOverModal" class="modal" style="display: none;" role="dialog" aria-labelledby="gameOverTitle" aria-modal="true">
+            <div class="modal-backdrop"></div>
+            <div class="modal-content">
+                <h2 id="gameOverTitle" class="modal-title">Game over</h2>
+                <p id="gameOverBody" class="modal-body"></p>
+                <div class="modal-actions">
+                    <button type="button" id="playAgainBtn" class="btn btn-primary">Play again</button>
+                    <button type="button" id="modalChangeDifficultyBtn" class="btn btn-outline">Change difficulty</button>
+                    <a href="../index.html" class="btn btn-outline">Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js?v=20260407e"></script>
+</body>
+</html>
