@@ -926,14 +926,41 @@ class BlindRankingGame {
 
     loadPlayerStats() {
         const Hub = window.FunGamesHubProfiles;
-        const defaultStats = { gamesPlayed: 0, totalScore: 0, highScore: 0, scores: [] };
+        const defaultStats = {
+            gamesPlayed: 0,
+            totalScore: 0,
+            highScore: 0,
+            scores: [],
+            byDifficulty: {
+                easy: { gamesPlayed: 0, totalScore: 0, highScore: 0, averageScore: 0 },
+                medium: { gamesPlayed: 0, totalScore: 0, highScore: 0, averageScore: 0 },
+                hard: { gamesPlayed: 0, totalScore: 0, highScore: 0, averageScore: 0 }
+            }
+        };
+        const normalizeStats = (source) => {
+            const out = { ...defaultStats, ...(source || {}) };
+            if (!Array.isArray(out.scores)) out.scores = [];
+            const srcByDiff = (source && source.byDifficulty) || {};
+            out.byDifficulty = {
+                easy: { ...defaultStats.byDifficulty.easy, ...(srcByDiff.easy || {}) },
+                medium: { ...defaultStats.byDifficulty.medium, ...(srcByDiff.medium || {}) },
+                hard: { ...defaultStats.byDifficulty.hard, ...(srcByDiff.hard || {}) }
+            };
+            ['easy', 'medium', 'hard'].forEach((level) => {
+                const d = out.byDifficulty[level];
+                if (typeof d.gamesPlayed !== 'number') d.gamesPlayed = 0;
+                if (typeof d.totalScore !== 'number') d.totalScore = 0;
+                if (typeof d.highScore !== 'number') d.highScore = 0;
+                d.averageScore = d.gamesPlayed > 0 ? Number((d.totalScore / d.gamesPlayed).toFixed(2)) : 0;
+            });
+            return out;
+        };
 
         if (Hub) {
             const profileId = Hub.getCurrentProfileId();
             const data = profileId ? Hub.getStatsForGame(profileId, 'blind-ranking') : null;
             if (data && data.playerStats) {
-                this.playerStats = { ...defaultStats, ...data.playerStats };
-                if (!Array.isArray(this.playerStats.scores)) this.playerStats.scores = [];
+                this.playerStats = normalizeStats(data.playerStats);
             } else {
                 const saved = localStorage.getItem('blindRankingPlayerStats');
                 if (saved) {
@@ -941,16 +968,15 @@ class BlindRankingGame {
                         const parsed = JSON.parse(saved);
                         const firstKey = Object.keys(parsed)[0];
                         const migrated = firstKey && typeof parsed[firstKey] === 'object'
-                            ? { ...defaultStats, ...parsed[firstKey] }
+                            ? normalizeStats(parsed[firstKey])
                             : { ...defaultStats };
-                        if (!Array.isArray(migrated.scores)) migrated.scores = [];
-                        this.playerStats = migrated;
+                        this.playerStats = normalizeStats(migrated);
                         if (profileId) Hub.setStatsForGame(profileId, 'blind-ranking', { playerStats: this.playerStats });
                     } catch (e) {
-                        this.playerStats = { ...defaultStats };
+                        this.playerStats = normalizeStats(defaultStats);
                     }
                 } else {
-                    this.playerStats = { ...defaultStats };
+                    this.playerStats = normalizeStats(defaultStats);
                 }
             }
         } else {
@@ -959,17 +985,16 @@ class BlindRankingGame {
                 try {
                     const parsed = JSON.parse(saved);
                     if (typeof parsed.gamesPlayed === 'number') {
-                        this.playerStats = { ...defaultStats, ...parsed };
+                        this.playerStats = normalizeStats(parsed);
                     } else {
                         const first = Object.keys(parsed)[0];
-                        this.playerStats = first ? { ...defaultStats, ...parsed[first] } : { ...defaultStats };
+                        this.playerStats = first ? normalizeStats(parsed[first]) : normalizeStats(defaultStats);
                     }
-                    if (!Array.isArray(this.playerStats.scores)) this.playerStats.scores = [];
                 } catch (e) {
-                    this.playerStats = { ...defaultStats };
+                    this.playerStats = normalizeStats(defaultStats);
                 }
             } else {
-                this.playerStats = { ...defaultStats };
+                this.playerStats = normalizeStats(defaultStats);
             }
         }
     }
@@ -988,11 +1013,30 @@ class BlindRankingGame {
     }
 
     updatePlayerStats(score) {
-        if (!this.playerStats) this.playerStats = { gamesPlayed: 0, totalScore: 0, highScore: 0, scores: [] };
+        if (!this.playerStats) {
+            this.playerStats = {
+                gamesPlayed: 0,
+                totalScore: 0,
+                highScore: 0,
+                scores: [],
+                byDifficulty: {
+                    easy: { gamesPlayed: 0, totalScore: 0, highScore: 0, averageScore: 0 },
+                    medium: { gamesPlayed: 0, totalScore: 0, highScore: 0, averageScore: 0 },
+                    hard: { gamesPlayed: 0, totalScore: 0, highScore: 0, averageScore: 0 }
+                }
+            };
+        }
         this.playerStats.gamesPlayed++;
         this.playerStats.totalScore += score;
         this.playerStats.scores.push(score);
         if (score > this.playerStats.highScore) this.playerStats.highScore = score;
+        if (this.difficulty && this.playerStats.byDifficulty && this.playerStats.byDifficulty[this.difficulty]) {
+            const d = this.playerStats.byDifficulty[this.difficulty];
+            d.gamesPlayed++;
+            d.totalScore += score;
+            if (score > d.highScore) d.highScore = score;
+            d.averageScore = d.gamesPlayed > 0 ? Number((d.totalScore / d.gamesPlayed).toFixed(2)) : 0;
+        }
         this.savePlayerStats();
     }
 

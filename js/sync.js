@@ -32,6 +32,21 @@
             highScore: Math.max(dp.highScore || 0, lp.highScore || 0),
             scores: [].concat(Array.isArray(dp.scores) ? dp.scores : [], Array.isArray(lp.scores) ? lp.scores : []).slice(-200)
         };
+        var byDifficulty = { easy: {}, medium: {}, hard: {} };
+        ['easy', 'medium', 'hard'].forEach(function (level) {
+            var dd = (dp.byDifficulty && dp.byDifficulty[level]) || {};
+            var ld = (lp.byDifficulty && lp.byDifficulty[level]) || {};
+            var gamesPlayed = Math.max(dd.gamesPlayed || 0, ld.gamesPlayed || 0);
+            var totalScore = (dd.totalScore || 0) + (ld.totalScore || 0);
+            var highScore = Math.max(dd.highScore || 0, ld.highScore || 0);
+            byDifficulty[level] = {
+                gamesPlayed: gamesPlayed,
+                totalScore: totalScore,
+                highScore: highScore,
+                averageScore: gamesPlayed > 0 ? Number((totalScore / gamesPlayed).toFixed(2)) : 0
+            };
+        });
+        playerStats.byDifficulty = byDifficulty;
         if (playerStats.gamesPlayed > 0 && playerStats.totalScore === 0 && playerStats.scores.length)
             playerStats.totalScore = playerStats.scores.reduce(function (a, b) { return a + b; }, 0);
         return { highScores: highScores, playerStats: playerStats };
@@ -133,6 +148,34 @@
         });
     }
 
+    function getMyAccountStats() {
+        if (!Auth || !Auth.isConfigured()) return Promise.resolve(null);
+        return ensureClient().then(function (client) {
+            if (!client) return null;
+            return client.rpc('get_my_account_stats').then(function (res) {
+                if (res.error) {
+                    console.warn('Jones Games stats: get_my_account_stats failed', res.error);
+                    return null;
+                }
+                return res.data || null;
+            });
+        });
+    }
+
+    function getHallOfFame(limit) {
+        if (!Auth || !Auth.isConfigured()) return Promise.resolve([]);
+        return ensureClient().then(function (client) {
+            if (!client) return [];
+            return client.rpc('get_hall_of_fame', { max_rows: limit || 100 }).then(function (res) {
+                if (res.error) {
+                    console.warn('Jones Games stats: get_hall_of_fame failed', res.error);
+                    return [];
+                }
+                return res.data || [];
+            });
+        });
+    }
+
     function syncWithServer() {
         if (!Auth || !Auth.isConfigured() || !Hub) return Promise.resolve();
         return Auth.getSession().then(function (session) {
@@ -177,6 +220,8 @@
         syncWithServer: syncWithServer,
         getProfile: getProfile,
         updateProfile: updateProfile,
+        getMyAccountStats: getMyAccountStats,
+        getHallOfFame: getHallOfFame,
         pullStats: pullStats,
         pushStats: pushStats,
         mergeBlindRanking: mergeBlindRanking,

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daily Challenge – Blind Ranking</title>
     <link rel="stylesheet" href="../blind-ranking/style.css">
-    <link rel="stylesheet" href="extra.css?v=20260326j">
+    <link rel="stylesheet" href="extra.css?v=20260326k">
 </head>
 <body>
     <div class="container">
@@ -65,6 +65,22 @@
                 <div id="dailyStatusBanner" class="daily-status-banner" style="display: none;"></div>
                 <div class="form-group start-button-group">
                     <button id="startBtn" class="btn btn-start">Start today’s challenge</button>
+                </div>
+            </div>
+            <div id="preplayLeaderboardContainer" class="daily-leaderboard" style="display: none;">
+                <h3>Today's records</h3>
+                <div class="daily-records-wrap">
+                    <table class="daily-records-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Name</th>
+                                <th>Score</th>
+                                <th>Duration</th>
+                            </tr>
+                        </thead>
+                        <tbody id="preplayLeaderboardList"></tbody>
+                    </table>
                 </div>
             </div>
             <div class="instructions">
@@ -154,6 +170,6 @@
     <script src="../js/config.js"></script>
     <script src="../js/auth.js"></script>
     <script src="../js/sync.js"></script>
-    <script src="script.js?v=20260326j"></script>
+    <script src="script.js?v=20260326k"></script>
 </body>
 </html>

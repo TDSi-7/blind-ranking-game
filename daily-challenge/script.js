@@ -83,6 +83,7 @@
     var slotElements;
     var gameOverTitleEl, gameOverMessageEl, finalScoreEl;
     var completedSection, completionTimeTextEl, leaderboardPromptEl, leaderboardContainerEl, leaderboardListEl;
+    var preplayLeaderboardContainerEl, preplayLeaderboardListEl;
 
     var slots = new Array(11);
     var numbers = [];
@@ -226,6 +227,12 @@
         loadLeaderboardInto(getTodayDateUTC(), alreadyCompletedLeaderboardListEl);
     }
 
+    function refreshPreplayLeaderboard() {
+        if (!preplayLeaderboardContainerEl || !preplayLeaderboardListEl) return;
+        preplayLeaderboardContainerEl.style.display = 'block';
+        loadLeaderboardInto(getTodayDateUTC(), preplayLeaderboardListEl);
+    }
+
     function updateAdminResetControls() {
         if (!adminResetControlsEl) return;
         adminResetControlsEl.style.display = isCurrentUserAdmin ? 'block' : 'none';
@@ -342,7 +349,7 @@
             }
             var mergedRows = withLocalAttemptRecord(res.data || [], dateStr);
             var html = renderRecordRows(mergedRows);
-            listEl.innerHTML = html || '<tr><td colspan="5">No records yet.</td></tr>';
+            listEl.innerHTML = html || '<tr><td colspan="4">No records yet.</td></tr>';
         });
     }
 
@@ -351,10 +358,7 @@
             showScreen('loginRequiredScreen');
             return;
         }
-        if (viewLeaderboard && !state.completedToday) {
-            showScreen('completeToSeeLeaderboardScreen');
-            return;
-        }
+        refreshPreplayLeaderboard();
         updateStartStatusBanner(state.completedToday, state.myCompletion);
         if (state.completedToday) {
             showAlreadyCompletedView(state.myCompletion);
@@ -736,6 +740,8 @@
         leaderboardPromptEl = getEl('leaderboardPrompt');
         leaderboardContainerEl = getEl('leaderboardContainer');
         leaderboardListEl = getEl('leaderboardList');
+        preplayLeaderboardContainerEl = getEl('preplayLeaderboardContainer');
+        preplayLeaderboardListEl = getEl('preplayLeaderboardList');
 
         var dateEl = getEl('dailyDate');
         if (dateEl) dateEl.textContent = 'Today: ' + formatDisplayDateUTC(getTodayDateUTC());
@@ -752,7 +758,7 @@
         }
 
         var playChallengeLink = getEl('playChallengeFromLeaderboardLink');
-        if (playChallengeLink) playChallengeLink.href = 'index.html?v=20260326j';
+        if (playChallengeLink) playChallengeLink.href = 'index.html?v=20260326k';
 
         startBtn.addEventListener('click', startGame);
         nextNumberBtn.addEventListener('click', showNextNumber);
