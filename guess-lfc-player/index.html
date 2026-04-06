@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guess the LFC Player</title>
+    <link rel="icon" type="image/png" href="../blind-ranking/assets/branding/Gemini_Generated_Image_szjltrszjltrszjl.png">
+    <link rel="stylesheet" href="style.css?v=20260407c">
+</head>
+<body>
+    <div class="container">
+        <div class="back-to-home-container">
+            <a href="../index.html" class="btn-back-home">← Back to Home</a>
+        </div>
+
+        <div id="startScreen" class="screen active">
+            <div class="start-branding">
+                <img
+                    src="../blind-ranking/assets/Lfc%20logo.png"
+                    alt="Liverpool FC"
+                    class="lfc-logo"
+                />
+            </div>
+            <h1>Guess the LFC Player</h1>
+            <p class="subtitle">You only see their position. Clues cost points. Five guesses max—can you name them?</p>
+            <div class="start-panel">
+                <p class="best-line">Best score: <strong id="bestScoreStart">—</strong></p>
+                <button type="button" id="startBtn" class="btn btn-primary">Start game</button>
+            </div>
+            <div class="instructions">
+                <h2 class="instructions-title">How to play</h2>
+                <ol class="instructions-list">
+                    <li>You start with <strong>100 points</strong>. The only thing shown at first is the player’s <strong>position</strong> (e.g. Goalkeeper, Defender, Midfielder, Forward).</li>
+                    <li>Type a name and press <strong>Guess</strong>. Each wrong guess costs points: <strong>5</strong>, then <strong>4</strong>, then <strong>3</strong>, then <strong>2</strong>, then <strong>1</strong> (1st miss through 5th miss). You have <strong>5</strong> guesses per round.</li>
+                    <li><strong>Clues</strong> are face-down cards—tap one to spend points and reveal it. Each clue can only be bought once per round.</li>
+                    <li>If you guess correctly, your <strong>score</strong> for that round is the points you have left (after wrong guesses and clues).</li>
+                </ol>
+            </div>
+        </div>
+
+        <div id="gameScreen" class="screen">
+            <div class="game-header">
+                <h2 class="game-title">Guess the player</h2>
+                <div class="stat-row" aria-live="polite">
+                    <span class="stat-pill">Score: <strong id="scoreDisplay">100</strong></span>
+                    <span class="stat-pill">Guesses left: <strong id="guessesLeftDisplay">5</strong></span>
+                </div>
+            </div>
+
+            <div class="position-banner" role="status">
+                <span class="position-label">Position</span>
+                <span id="positionDisplay" class="position-value">—</span>
+            </div>
+
+            <form id="guessForm" class="guess-form" autocomplete="off">
+                <div class="guess-field">
+                    <label for="guessInput" class="sr-only">Player name</label>
+                    <input
+                        type="text"
+                        id="guessInput"
+                        class="guess-input"
+                        placeholder="Type the player’s name…"
+                        maxlength="80"
+                        autocomplete="off"
+                        role="combobox"
+                        aria-autocomplete="list"
+                        aria-expanded="false"
+                        aria-controls="guessSuggestions"
+                    />
+                    <ul id="guessSuggestions" class="guess-suggestions" role="listbox" hidden></ul>
+                </div>
+                <button type="submit" class="btn btn-primary" id="guessSubmitBtn">Guess</button>
+            </form>
+            <p id="guessFeedback" class="guess-feedback" role="status" aria-live="polite"></p>
+
+            <section class="clues-section" aria-labelledby="cluesHeading">
+                <h3 id="cluesHeading" class="clues-heading">Clues</h3>
+                <p class="clues-hint">Tap a card to buy and reveal. You can’t afford a clue if your score is too low.</p>
+                <div id="clueGrid" class="clue-grid"></div>
+            </section>
+
+            <div class="game-actions">
+                <button type="button" id="newRoundBtn" class="btn btn-outline">New game</button>
+            </div>
+        </div>
+
+        <div id="endModal" class="modal" style="display: none;" role="dialog" aria-labelledby="endModalTitle" aria-modal="true">
+            <div class="modal-backdrop"></div>
+            <div class="modal-content">
+                <h2 id="endModalTitle" class="modal-title">Round over</h2>
+                <p id="endModalBody" class="modal-body"></p>
+                <div class="modal-actions">
+                    <button type="button" id="endPlayAgainBtn" class="btn btn-primary">Play again</button>
+                    <a href="../index.html" class="btn btn-outline">Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/profiles.js"></script>
+    <script src="script.js?v=20260407b"></script>
+</body>
+</html>

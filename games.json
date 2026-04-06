@@ -27,6 +27,19 @@
       "freePlay": true
     },
     {
+      "id": "guess-lfc-player",
+      "name": "Guess the LFC Player",
+      "folder": "guess-lfc-player",
+      "description": "See only their position—buy clues and guess the Liverpool player. Five guesses, 100 points to spend!",
+      "icon": "⚽",
+      "difficultyLevels": ["Easy", "Medium", "Hard"],
+      "ageRange": "8-12",
+      "color": "#b91c1c",
+      "featured": true,
+      "creator": "Alex",
+      "freePlay": true
+    },
+    {
       "id": "mimi-memory-chess",
       "name": "Mimi's Memory Chess",
       "folder": "mimi-memory-chess",
