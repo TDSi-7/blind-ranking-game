@@ -17,7 +17,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function renderRows(rows) {
         if (!bodyEl) return;
-        var data = Array.isArray(rows) ? rows : [];
+        var data = (Array.isArray(rows) ? rows : []).filter(function (row) {
+            return String((row && row.display_name) || '').trim().toLowerCase() !== 'si test';
+        });
         if (!data.length) {
             bodyEl.innerHTML = '<tr><td colspan="7">No hall of fame entries yet.</td></tr>';
             return;
@@ -25,8 +27,9 @@ document.addEventListener('DOMContentLoaded', function () {
         bodyEl.innerHTML = data.map(function (row) {
             var rank = Number(row.rank_position || 0);
             var rankClass = rank <= 3 ? ' class="rank-' + rank + '"' : '';
+            var medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
             return '<tr' + rankClass + '>' +
-                '<td>' + formatNumber(rank) + '</td>' +
+                '<td><span class="rank-medal">' + medal + '</span> ' + formatNumber(rank) + '</td>' +
                 '<td>' + escapeHtml(row.display_name || 'Player') + '</td>' +
                 '<td>' + formatNumber(row.points) + '</td>' +
                 '<td>' + formatNumber(row.first_count) + '</td>' +

@@ -142,6 +142,12 @@
                 if (updates.avatar_url !== undefined) payload.avatar_url = updates.avatar_url;
                 return client.from('profiles').upsert(payload, { onConflict: 'id' }).then(function (res) {
                     if (res.error) return Promise.reject(res.error);
+                    if (payload.display_name !== undefined) {
+                        return client.from('daily_challenge_completions')
+                            .update({ display_name: payload.display_name, updated_at: new Date().toISOString() })
+                            .eq('user_id', userId)
+                            .then(function () { return res.data; });
+                    }
                     return res.data;
                 });
             });

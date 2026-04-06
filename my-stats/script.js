@@ -32,21 +32,24 @@ document.addEventListener('DOMContentLoaded', function () {
         var gamesList = (stats.games_played_games || []).map(escapeHtml).join(', ') || 'None yet';
 
         content.innerHTML = [
-            '<p class="my-stat-line"><strong>Total games played:</strong> ' + formatNumber(stats.games_played_total) + '</p>',
-            '<p class="my-stat-line"><strong>Games played:</strong> ' + gamesList + '</p>',
-            '<p class="my-stat-line"><strong>Blind Ranking overall average:</strong> ' + formatNumber(blind.overall_average_score) + '</p>',
-            '<p class="my-stat-line"><strong>Blind Ranking highs (Easy/Medium/Hard):</strong> ' +
+            '<div class="kid-stats-grid">',
+            '<article class="kid-stat-card"><h3>🎮 Games Played</h3><p class="kid-stat-number">' + formatNumber(stats.games_played_total) + '</p></article>',
+            '<article class="kid-stat-card"><h3>📈 Average Score</h3><p class="kid-stat-number">' + formatNumber(blind.overall_average_score) + '</p></article>',
+            '<article class="kid-stat-card"><h3>🏆 Best Score</h3><p class="kid-stat-number">' + formatNumber(blind.overall_high_score) + '</p></article>',
+            '<article class="kid-stat-card"><h3>🥇 1st Places</h3><p class="kid-stat-number">' + formatNumber(daily.first_count) + '</p></article>',
+            '<article class="kid-stat-card"><h3>🥈 2nd Places</h3><p class="kid-stat-number">' + formatNumber(daily.second_count) + '</p></article>',
+            '<article class="kid-stat-card"><h3>🥉 3rd Places</h3><p class="kid-stat-number">' + formatNumber(daily.third_count) + '</p></article>',
+            '</div>',
+            '<p class="my-stat-line"><strong>Games you've tried:</strong> ' + gamesList + '</p>',
+            '<p class="my-stat-line"><strong>Daily average position:</strong> ' + formatNumber(daily.average_position) + '</p>',
+            '<p class="my-stat-line"><strong>Blind Ranking highs (Easy / Medium / Hard):</strong> ' +
                 formatNumber((((blind.high_scores || {}).easy || {}).highScore)) + ' / ' +
                 formatNumber((((blind.high_scores || {}).medium || {}).highScore)) + ' / ' +
                 formatNumber((((blind.high_scores || {}).hard || {}).highScore)) + '</p>',
-            '<p class="my-stat-line"><strong>Blind Ranking averages (Easy/Medium/Hard):</strong> ' +
+            '<p class="my-stat-line"><strong>Blind Ranking averages (Easy / Medium / Hard):</strong> ' +
                 formatNumber((((blindDiff.easy || {}).averageScore))) + ' / ' +
                 formatNumber((((blindDiff.medium || {}).averageScore))) + ' / ' +
-                formatNumber((((blindDiff.hard || {}).averageScore))) + '</p>',
-            '<p class="my-stat-line"><strong>Daily challenges played:</strong> ' + formatNumber(daily.challenges_played) + '</p>',
-            '<p class="my-stat-line"><strong>Daily podiums (1st/2nd/3rd):</strong> ' +
-                formatNumber(daily.first_count) + ' / ' + formatNumber(daily.second_count) + ' / ' + formatNumber(daily.third_count) + '</p>',
-            '<p class="my-stat-line"><strong>Daily average position:</strong> ' + formatNumber(daily.average_position) + '</p>'
+                formatNumber((((blindDiff.hard || {}).averageScore))) + '</p>'
         ].join('');
     }
 

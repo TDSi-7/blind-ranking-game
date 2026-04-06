@@ -834,6 +834,26 @@ body::before {
     display: flex;
     align-items: center;
     gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn-nickname {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 16px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #1e3a8a;
+    border: 2px solid #bfdbfe;
+    background: #eff6ff;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.btn-nickname:hover {
+    background: #dbeafe;
 }
 
 .auth-user-hint {
@@ -942,6 +962,99 @@ body::before {
 
 .game-rail .game-meta {
     justify-content: center;
+}
+
+.game-card-coming-soon {
+    border-style: dashed !important;
+    border-color: rgba(55, 65, 81, 0.35) !important;
+    background: linear-gradient(180deg, #ffffff, #f8fafc);
+}
+
+.game-card-coming-soon .game-name {
+    color: #334155;
+}
+
+.game-card-coming-soon .game-description {
+    color: #475569;
+}
+
+.stats-page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding-top: 10px;
+}
+
+.stats-page-logo-wrap {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.stats-page-logo {
+    width: min(340px, 66vw);
+    height: auto;
+}
+
+.stats-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.stats-page-title {
+    font-size: 2rem;
+    color: #0f172a;
+    margin: 0;
+}
+
+.hall-of-fame-wrap {
+    margin-top: 8px;
+    border: 1px solid #dbe1ef;
+    border-radius: 14px;
+    background: #fff;
+}
+
+.hall-of-fame-table {
+    min-width: 820px;
+}
+
+.hall-of-fame-table th,
+.hall-of-fame-table td {
+    padding: 14px 16px;
+}
+
+.rank-medal {
+    margin-right: 6px;
+}
+
+.kid-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.kid-stat-card {
+    border-radius: 14px;
+    border: 2px solid #cbd5e1;
+    background: linear-gradient(180deg, #ffffff, #f8fafc);
+    padding: 12px;
+    text-align: center;
+}
+
+.kid-stat-card h3 {
+    margin: 0 0 8px;
+    color: #1e293b;
+    font-size: 1rem;
+}
+
+.kid-stat-number {
+    margin: 0;
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: #1d4ed8;
 }
 
 .empty-rail-note {

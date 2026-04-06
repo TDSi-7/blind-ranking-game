@@ -17,6 +17,7 @@
             </div>
             <div id="authSection" class="header-auth" style="display: none;">
                 <button type="button" id="authActionBtn" class="btn-login-top" style="display: none;">Login</button>
+                <button type="button" id="nicknameBtn" class="btn-nickname" style="display: none;">Nickname</button>
                 <span id="authUserHint" class="auth-user-hint" style="display: none;"></span>
             </div>
         </header>
@@ -40,12 +41,27 @@
             <p>Oops! Couldn't load games. Please refresh the page.</p>
         </div>
     </div>
+
+    <div id="nicknameModal" class="settings-modal" role="dialog" aria-labelledby="nicknameModalTitle" aria-modal="true" style="display:none;">
+        <div class="settings-modal-backdrop"></div>
+        <div class="settings-modal-content">
+            <h2 id="nicknameModalTitle" class="settings-modal-title">Choose your nickname</h2>
+            <div class="settings-form">
+                <label for="nicknameInput">This name appears on leaderboards</label>
+                <input type="text" id="nicknameInput" class="settings-nickname-input" placeholder="Nickname" maxlength="32" autocomplete="off">
+                <div class="settings-modal-actions">
+                    <button type="button" id="nicknameSaveBtn" class="btn-settings-save">Save nickname</button>
+                    <button type="button" id="nicknameCloseBtn" class="btn-settings-close">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
     
     <script src="js/profiles.js"></script>
     <!-- Optional: add Supabase URL + anon key in js/config.js (see js/config.example.js) -->
     <script src="js/config.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/sync.js"></script>
-    <script src="home.js?v=20260406a"></script>
+    <script src="home.js?v=20260406d"></script>
 </body>
 </html>

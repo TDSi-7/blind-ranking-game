@@ -295,7 +295,10 @@
     }
 
     function renderRecordRows(rows) {
-        return (rows || []).map(function (row, i) {
+        var filteredRows = (rows || []).filter(function (row) {
+            return String((row && row.display_name) || '').trim().toLowerCase() !== 'si test';
+        });
+        return filteredRows.map(function (row, i) {
             var name = escapeHtml(row.display_name || 'Player');
             var score = typeof row.score === 'number' ? row.score : 0;
             var duration = typeof row.completion_time_seconds === 'number' ? formatTime(row.completion_time_seconds) : '-';

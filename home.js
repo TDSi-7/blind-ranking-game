@@ -4,8 +4,14 @@ document.addEventListener('DOMContentLoaded', function () {
     var errorMessage = document.getElementById('errorMessage');
     var authSection = document.getElementById('authSection');
     var authActionBtn = document.getElementById('authActionBtn');
+    var nicknameBtn = document.getElementById('nicknameBtn');
     var authUserHint = document.getElementById('authUserHint');
     var authNote = document.getElementById('authNote');
+    var nicknameModal = document.getElementById('nicknameModal');
+    var nicknameInput = document.getElementById('nicknameInput');
+    var nicknameSaveBtn = document.getElementById('nicknameSaveBtn');
+    var nicknameCloseBtn = document.getElementById('nicknameCloseBtn');
+    var nicknameBackdrop = nicknameModal ? nicknameModal.querySelector('.settings-modal-backdrop') : null;
 
     var Auth = window.JonesGamesAuth;
     var DAILY_CHALLENGE_ASSET_VERSION = '20260326k';
@@ -33,23 +39,66 @@ document.addEventListener('DOMContentLoaded', function () {
             var name = meta.full_name || meta.name || session.user.email || 'Player';
             authActionBtn.textContent = 'Logout';
             authActionBtn.style.display = 'inline-flex';
+            if (nicknameBtn) nicknameBtn.style.display = 'inline-flex';
             if (authUserHint) {
                 authUserHint.textContent = 'Logged in as ' + name;
                 authUserHint.style.display = 'inline-block';
             }
             if (authNote) authNote.style.display = 'none';
             if (window.JonesGamesSync && window.JonesGamesSync.syncWithServer) {
-                window.JonesGamesSync.syncWithServer();
+                window.JonesGamesSync.syncWithServer().then(function () {
+                    if (window.JonesGamesSync.getProfile && authUserHint) {
+                        window.JonesGamesSync.getProfile().then(function (profile) {
+                            if (profile && profile.display_name) {
+                                authUserHint.textContent = 'Logged in as ' + profile.display_name;
+                            }
+                        });
+                    }
+                });
             }
         } else {
             authActionBtn.textContent = 'Login';
             authActionBtn.style.display = Auth && Auth.isConfigured && Auth.isConfigured() ? 'inline-flex' : 'none';
+            if (nicknameBtn) nicknameBtn.style.display = 'none';
             if (authUserHint) {
                 authUserHint.textContent = '';
                 authUserHint.style.display = 'none';
             }
             if (authNote) authNote.style.display = Auth && Auth.isConfigured && Auth.isConfigured() ? 'block' : 'none';
         }
+    }
+
+    function openNicknameModal() {
+        if (!isLoggedIn || !nicknameModal || !nicknameInput) return;
+        nicknameModal.style.display = 'flex';
+        if (window.JonesGamesSync && window.JonesGamesSync.getProfile) {
+            window.JonesGamesSync.getProfile().then(function (profile) {
+                nicknameInput.value = profile && profile.display_name ? profile.display_name : '';
+                nicknameInput.focus();
+                nicknameInput.select();
+            });
+            return;
+        }
+        nicknameInput.value = '';
+        nicknameInput.focus();
+    }
+
+    function closeNicknameModal() {
+        if (nicknameModal) nicknameModal.style.display = 'none';
+    }
+
+    function saveNickname() {
+        if (!isLoggedIn || !window.JonesGamesSync || !window.JonesGamesSync.updateProfile) return;
+        var nickname = nicknameInput ? nicknameInput.value.trim() : '';
+        window.JonesGamesSync.updateProfile({ display_name: nickname || 'Player' })
+            .then(function () {
+                if (authUserHint) authUserHint.textContent = 'Logged in as ' + (nickname || 'Player');
+                closeNicknameModal();
+            })
+            .catch(function (err) {
+                console.error('Nickname update failed', err);
+                alert('Could not save nickname. Please try again.');
+            });
     }
 
     function normalizeCreator(value) {
@@ -90,9 +139,8 @@ document.addEventListener('DOMContentLoaded', function () {
         var cards = (games || []).map(function (game) {
             return createGameCard(game);
         }).join('');
-        if (!cards) {
-            cards = '<p class="empty-rail-note">More games coming soon.</p>';
-        }
+        cards += createComingSoonCard();
+        if (!cards) cards = '<p class="empty-rail-note">More games coming soon.</p>';
         return '<section class="game-rail-section ' + sectionClass + '">' +
             '<h2 class="rail-title">' + escapeHtml(title) + '</h2>' +
             '<div class="game-rail" role="region" aria-label="' + escapeHtml(title) + '">' + cards + '</div>' +
@@ -135,6 +183,15 @@ document.addEventListener('DOMContentLoaded', function () {
             '</a>';
     }
 
+    function createComingSoonCard() {
+        return '<article class="game-card game-card-coming-soon">' +
+            '<div class="game-icon">✨</div>' +
+            '<h3 class="game-name">Coming Soon</h3>' +
+            '<p class="game-description">A brand new game is being built for this section.</p>' +
+            '<div class="game-meta"><span class="game-age-range">Stay Tuned</span></div>' +
+            '</article>';
+    }
+
     if (authActionBtn) {
         authActionBtn.addEventListener('click', function () {
             if (!Auth || !Auth.isConfigured || !Auth.isConfigured()) return;
@@ -148,6 +205,10 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     }
+    if (nicknameBtn) nicknameBtn.addEventListener('click', openNicknameModal);
+    if (nicknameSaveBtn) nicknameSaveBtn.addEventListener('click', saveNickname);
+    if (nicknameCloseBtn) nicknameCloseBtn.addEventListener('click', closeNicknameModal);
+    if (nicknameBackdrop) nicknameBackdrop.addEventListener('click', closeNicknameModal);
 
     if (Auth) {
         (window.__JonesGamesAuthInit__ || (function () { return Promise.resolve(); }))()
