@@ -24,8 +24,8 @@ document.addEventListener('DOMContentLoaded', function () {
             bodyEl.innerHTML = '<tr><td colspan="7">No hall of fame entries yet.</td></tr>';
             return;
         }
-        bodyEl.innerHTML = data.map(function (row) {
-            var rank = Number(row.rank_position || 0);
+        bodyEl.innerHTML = data.map(function (row, index) {
+            var rank = index + 1;
             var rankClass = rank <= 3 ? ' class="rank-' + rank + '"' : '';
             var medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
             return '<tr' + rankClass + '>' +

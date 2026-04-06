@@ -29,7 +29,11 @@ document.addEventListener('DOMContentLoaded', function () {
         var blind = stats.blind_ranking || {};
         var blindDiff = blind.difficulty || {};
         var daily = stats.daily_challenge || {};
-        var gamesList = (stats.games_played_games || []).map(escapeHtml).join(', ') || 'None yet';
+        var gamesRaw = stats.games_played_games;
+        var gamesArray = Array.isArray(gamesRaw) ? gamesRaw : (gamesRaw ? [gamesRaw] : []);
+        var gamesList = gamesArray.map(function (item) {
+            return escapeHtml(String(item || ''));
+        }).join(', ') || 'None yet';
 
         content.innerHTML = [
             '<div class="kid-stats-grid">',
@@ -58,6 +62,7 @@ document.addEventListener('DOMContentLoaded', function () {
             renderLoggedOut();
             return;
         }
+        if (content) content.innerHTML = 'Loading your records...';
         (window.__JonesGamesAuthInit__ ? window.__JonesGamesAuthInit__() : Promise.resolve())
             .then(function () { return Auth.getSession(); })
             .then(function (session) {
