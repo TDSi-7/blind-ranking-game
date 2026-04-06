@@ -15,6 +15,21 @@ document.addEventListener('DOMContentLoaded', function () {
         return div.innerHTML;
     }
 
+    function renderDailyChallengeBlock(title, d) {
+        var o = d || {};
+        return (
+            '<article class="kid-stat-card kid-stat-card--daily">' +
+            '<h3>' + escapeHtml(title) + '</h3>' +
+            '<div class="kid-stats-grid kid-stats-grid--nested">' +
+            '<p class="kid-stat-inline"><strong>Played:</strong> ' + formatNumber(o.challenges_played) + '</p>' +
+            '<p class="kid-stat-inline"><strong>Points:</strong> ' + formatNumber(o.points) + '</p>' +
+            '<p class="kid-stat-inline"><strong>1st / 2nd / 3rd:</strong> ' +
+            formatNumber(o.first_count) + ' / ' + formatNumber(o.second_count) + ' / ' + formatNumber(o.third_count) + '</p>' +
+            '<p class="kid-stat-inline"><strong>Avg position:</strong> ' + formatNumber(o.average_position) + '</p>' +
+            '</div></article>'
+        );
+    }
+
     function renderLoggedOut() {
         if (loginNote) loginNote.style.display = 'block';
         if (content) content.innerHTML = 'Log in to view your personal records.';
@@ -28,7 +43,10 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         var blind = stats.blind_ranking || {};
         var blindDiff = blind.difficulty || {};
-        var daily = stats.daily_challenge || {};
+        var dc = stats.daily_challenges || {};
+        var brDaily = dc.blind_ranking || stats.daily_challenge || {};
+        var holDaily = dc.higher_or_lower || {};
+        var cbDaily = dc.codebreaker || {};
         var gamesRaw = stats.games_played_games;
         var gamesArray = Array.isArray(gamesRaw) ? gamesRaw : (gamesRaw ? [gamesRaw] : []);
         var gamesList = gamesArray.map(function (item) {
@@ -40,12 +58,14 @@ document.addEventListener('DOMContentLoaded', function () {
             '<article class="kid-stat-card"><h3>🎮 Games Played</h3><p class="kid-stat-number">' + formatNumber(stats.games_played_total) + '</p></article>',
             '<article class="kid-stat-card"><h3>📈 Average Score</h3><p class="kid-stat-number">' + formatNumber(blind.overall_average_score) + '</p></article>',
             '<article class="kid-stat-card"><h3>🏆 Best Score</h3><p class="kid-stat-number">' + formatNumber(blind.overall_high_score) + '</p></article>',
-            '<article class="kid-stat-card"><h3>🥇 1st Places</h3><p class="kid-stat-number">' + formatNumber(daily.first_count) + '</p></article>',
-            '<article class="kid-stat-card"><h3>🥈 2nd Places</h3><p class="kid-stat-number">' + formatNumber(daily.second_count) + '</p></article>',
-            '<article class="kid-stat-card"><h3>🥉 3rd Places</h3><p class="kid-stat-number">' + formatNumber(daily.third_count) + '</p></article>',
             '</div>',
-            '<p class="my-stat-line"><strong>Games you've tried:</strong> ' + gamesList + '</p>',
-            '<p class="my-stat-line"><strong>Daily average position:</strong> ' + formatNumber(daily.average_position) + '</p>',
+            '<h3 class="account-section-title" style="margin-top:1.5rem;">Daily challenges</h3>',
+            '<div class="kid-stats-grid">',
+            renderDailyChallengeBlock('Blind Rank Daily', brDaily),
+            renderDailyChallengeBlock('Higher or Lower Daily', holDaily),
+            renderDailyChallengeBlock('Codebreaker Daily', cbDaily),
+            '</div>',
+            '<p class="my-stat-line"><strong>Games you\'ve tried:</strong> ' + gamesList + '</p>',
             '<p class="my-stat-line"><strong>Blind Ranking highs (Easy / Medium / Hard):</strong> ' +
                 formatNumber((((blind.high_scores || {}).easy || {}).highScore)) + ' / ' +
                 formatNumber((((blind.high_scores || {}).medium || {}).highScore)) + ' / ' +

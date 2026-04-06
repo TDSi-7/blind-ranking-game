@@ -14,9 +14,9 @@ document.addEventListener('DOMContentLoaded', function () {
     var nicknameBackdrop = nicknameModal ? nicknameModal.querySelector('.settings-modal-backdrop') : null;
 
     var Auth = window.JonesGamesAuth;
-    var DAILY_CHALLENGE_ASSET_VERSION = '20260326k';
+    var DAILY_CHALLENGE_ASSET_VERSION = '20260406hof';
     /** Bump when games.json changes so CDN/browsers fetch the new catalog. */
-    var GAMES_CATALOG_VERSION = '20260407f';
+    var GAMES_CATALOG_VERSION = '20260406hof';
     var isLoggedIn = false;
 
     function escapeHtml(s) {
@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function getGameUrl(game) {
-        if (game && game.id === 'daily-challenge') {
+        if (game && (game.dailyChallenge || game.id === 'daily-challenge')) {
             return game.folder + '/index.html?v=' + DAILY_CHALLENGE_ASSET_VERSION;
         }
         return game.folder + '/index.html';
@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', function () {
         };
 
         (games || []).forEach(function (game) {
-            if (game.id === 'daily-challenge') {
+            if (game.dailyChallenge || game.id === 'daily-challenge') {
                 sections.daily.push(game);
                 return;
             }
@@ -195,7 +195,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }).join('');
         if (game.freePlay) {
             difficultyBadges = '<span class="difficulty-badge free-play">Free Play</span>' + difficultyBadges;
-        } else if (game.id === 'daily-challenge') {
+        } else if (game.dailyChallenge || game.id === 'daily-challenge') {
             difficultyBadges = '<span class="difficulty-badge daily">Daily</span>' + difficultyBadges;
         }
         var cardColor = game.color || '#2196F3';

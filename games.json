@@ -54,7 +54,7 @@
     },
     {
       "id": "daily-challenge",
-      "name": "Daily Challenge",
+      "name": "Blind Rank Daily Challenge",
       "folder": "daily-challenge",
       "description": "One Blind Ranking puzzle per day. Same for everyone—compete on the leaderboard.",
       "icon": "📅",
@@ -63,7 +63,36 @@
       "color": "#4caf50",
       "featured": true,
       "creator": "Jones Games",
-      "freePlay": false
+      "freePlay": false,
+      "dailyChallenge": true
+    },
+    {
+      "id": "daily-higher-or-lower",
+      "name": "Higher or Lower Daily Challenge",
+      "folder": "daily-challenge-higher-or-lower",
+      "description": "Medium card run—same deal for everyone each day. Build your streak and climb the leaderboard.",
+      "icon": "🃏",
+      "difficultyLevels": ["Medium"],
+      "ageRange": "8-12",
+      "color": "#2563eb",
+      "featured": true,
+      "creator": "Jones Games",
+      "freePlay": false,
+      "dailyChallenge": true
+    },
+    {
+      "id": "daily-codebreaker",
+      "name": "Codebreaker Daily Challenge",
+      "folder": "daily-challenge-codebreaker",
+      "description": "Medium code in 7 guesses—one secret per day for the whole world. Beat the clock.",
+      "icon": "🎯",
+      "difficultyLevels": ["Medium"],
+      "ageRange": "8-12",
+      "color": "#7e57c2",
+      "featured": true,
+      "creator": "Jones Games",
+      "freePlay": false,
+      "dailyChallenge": true
     }
   ]
 }

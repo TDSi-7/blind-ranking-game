@@ -169,6 +169,33 @@ body::before {
     overflow-x: auto;
 }
 
+.hof-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.hof-tab {
+    padding: 8px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    background: #f8fafc;
+    font-family: inherit;
+    font-size: 0.9em;
+    cursor: pointer;
+}
+
+.hof-tab:hover {
+    background: #e2e8f0;
+}
+
+.hof-tab[aria-selected="true"] {
+    background: #1e293b;
+    color: #fff;
+    border-color: #1e293b;
+}
+
 .hall-of-fame-table {
     width: 100%;
     min-width: 620px;
@@ -1061,6 +1088,7 @@ body::before {
     border: 1px solid #dbe1ef;
     border-radius: 14px;
     background: #fff;
+    padding: 16px;
 }
 
 .hall-of-fame-table {
@@ -1102,6 +1130,29 @@ body::before {
     font-size: 1.9rem;
     font-weight: 800;
     color: #1d4ed8;
+}
+
+.kid-stat-card--daily {
+    text-align: left;
+}
+
+.kid-stat-card--daily h3 {
+    text-align: center;
+}
+
+.kid-stats-grid--nested {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 8px;
+    text-align: left;
+}
+
+.kid-stat-inline {
+    margin: 0;
+    font-size: 0.88em;
+    line-height: 1.4;
+    color: #334155;
 }
 
 .empty-rail-note {

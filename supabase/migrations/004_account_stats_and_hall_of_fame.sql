@@ -103,11 +103,11 @@ mimi AS (
 ),
 game_rollup AS (
     SELECT
-        COALESCE(SUM(COALESCE((gs.stats->'playerStats'->>'gamesPlayed')::int, gs.stats->>'gamesPlayed', '0')::int), 0)::int AS total_games_played,
+        COALESCE(SUM((COALESCE(gs.stats->'playerStats'->>'gamesPlayed', gs.stats->>'gamesPlayed', '0'))::int), 0)::int AS total_games_played,
         COALESCE(
             jsonb_object_agg(
                 gs.game_id,
-                COALESCE((gs.stats->'playerStats'->>'gamesPlayed')::int, gs.stats->>'gamesPlayed', '0')::int
+                (COALESCE(gs.stats->'playerStats'->>'gamesPlayed', gs.stats->>'gamesPlayed', '0'))::int
             ),
             '{}'::jsonb
         ) AS games_played_by_game

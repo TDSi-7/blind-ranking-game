@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hall of Fame - Jones Games</title>
     <link rel="icon" type="image/png" href="../blind-ranking/assets/branding/Gemini_Generated_Image_szjltrszjltrszjl.png">
-    <link rel="stylesheet" href="../style.css?v=20260406d">
+    <link rel="stylesheet" href="../style.css?v=20260406hof">
 </head>
 <body>
     <div class="home-container stats-page">
@@ -18,6 +18,11 @@
         </div>
         <p id="hofLoginNote" class="auth-note" style="display:none;">Please log in to view Hall of Fame.</p>
         <div class="hall-of-fame-wrap">
+            <div id="hofTabs" class="hof-tabs" role="tablist" aria-label="Daily challenge game">
+                <button type="button" class="hof-tab" role="tab" id="hofTab-blind_ranking" aria-selected="true" data-challenge-id="blind_ranking">Blind Rank Daily</button>
+                <button type="button" class="hof-tab" role="tab" id="hofTab-higher_or_lower" aria-selected="false" data-challenge-id="higher_or_lower">Higher or Lower</button>
+                <button type="button" class="hof-tab" role="tab" id="hofTab-codebreaker" aria-selected="false" data-challenge-id="codebreaker">Codebreaker</button>
+            </div>
             <table class="hall-of-fame-table">
                 <thead>
                     <tr>
@@ -39,6 +44,6 @@
     <script src="../js/config.js"></script>
     <script src="../js/auth.js"></script>
     <script src="../js/sync.js"></script>
-    <script src="script.js?v=20260406e"></script>
+    <script src="script.js?v=20260406hof"></script>
 </body>
 </html>

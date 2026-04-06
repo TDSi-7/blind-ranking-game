@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Codebreaker Daily Challenge</title>
+    <link rel="icon" type="image/png" href="../blind-ranking/assets/branding/Gemini_Generated_Image_szjltrszjltrszjl.png">
+    <link rel="stylesheet" href="../codebreaker/style.css?v=20260407b">
+    <link rel="stylesheet" href="../daily-challenge/extra.css?v=20260406hof">
+</head>
+<body>
+    <div class="container">
+        <div class="back-to-home-container">
+            <a href="../index.html" class="btn-back-home">← Back to Home</a>
+        </div>
+
+        <div id="loginRequiredScreen" class="screen active">
+            <h1>Codebreaker Daily</h1>
+            <p class="subtitle">Sign in to play. One result per day—same secret code for everyone.</p>
+            <div class="daily-login-required-actions">
+                <a href="../index.html" class="btn btn-start">Log in</a>
+            </div>
+        </div>
+
+        <div id="alreadyCompletedScreen" class="screen">
+            <h1>Codebreaker Daily</h1>
+            <p class="subtitle">You've already played today's challenge.</p>
+            <p id="alreadyCompletedTime" class="daily-time"></p>
+            <div id="adminResetControls" class="admin-reset-controls" style="display: none;">
+                <button id="adminResetTodayBtn" class="btn btn-secondary" type="button">Admin: Reset today (this game only)</button>
+                <p id="adminResetStatus" class="admin-reset-status"></p>
+            </div>
+            <div class="daily-leaderboard">
+                <h3>Today's records</h3>
+                <div class="daily-records-wrap">
+                    <table class="daily-records-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Name</th>
+                                <th>Score</th>
+                                <th>Time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="alreadyCompletedLeaderboardList"></tbody>
+                    </table>
+                </div>
+            </div>
+            <a href="../index.html" class="btn btn-primary">Back to Home</a>
+        </div>
+
+        <div id="startScreen" class="screen">
+            <h1>Codebreaker Daily</h1>
+            <p class="subtitle">Medium — 7 colors, 7 slots, 7 guesses. Same code for everyone today.</p>
+            <div class="start-form">
+                <p id="dailyDate" class="daily-date"></p>
+                <div id="dailyStatusBanner" class="daily-status-banner" style="display: none;"></div>
+                <div class="form-group start-button-group">
+                    <button id="startBtn" class="btn btn-start">Start today's challenge</button>
+                </div>
+            </div>
+            <div id="preplayLeaderboardContainer" class="daily-leaderboard" style="display: none;">
+                <h3>Today's records</h3>
+                <div class="daily-records-wrap">
+                    <table class="daily-records-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Name</th>
+                                <th>Score</th>
+                                <th>Time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="preplayLeaderboardList"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="instructions">
+                <h3 class="instructions-title">How to play</h3>
+                <ul class="instructions-list">
+                    <li><span class="bullet-label">1.</span> Guess the hidden color sequence in at most 7 tries.</li>
+                    <li><span class="bullet-label">2.</span> Green = right color and place; orange = right color, wrong place.</li>
+                    <li><span class="bullet-label">3.</span> Higher score is better; faster time breaks ties.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="gameScreen" class="screen">
+            <div class="game-header">
+                <a href="../index.html" class="btn-back-home" style="margin-right:auto;font-size:0.9rem;">Home</a>
+                <h2>Codebreaker Daily</h2>
+                <div class="game-meta-bar">
+                    <span id="difficultyLabel" class="meta-pill">Medium · 7 slots</span>
+                    <span id="attemptsLabel" class="meta-pill"></span>
+                    <span class="meta-pill">Time: <span id="timerDisplay">0:00</span></span>
+                </div>
+                <p id="statusMessage" class="status-message" role="status"></p>
+            </div>
+
+            <div class="game-play-main">
+                <div class="palette-section">
+                    <div class="palette-label">Tap a color to fill the next empty slot</div>
+                    <div id="palette" class="palette" role="group" aria-label="Color palette"></div>
+                    <div class="guess-actions">
+                        <button type="button" id="backspaceBtn" class="btn btn-secondary">Remove last</button>
+                        <button type="button" id="clearRowBtn" class="btn btn-secondary">Clear row</button>
+                        <button type="button" id="submitBtn" class="btn btn-primary" disabled>Submit guess</button>
+                    </div>
+                </div>
+                <div id="boardArea" class="board-area">
+                    <div id="board" class="board" aria-label="Guess board"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="gameOverScreen" class="screen">
+            <h1 id="gameOverTitle">Round complete</h1>
+            <p id="gameOverMessage" class="message"></p>
+            <p class="daily-time">Your time: <strong id="completionTimeText">0:00</strong></p>
+            <div id="secretReveal" class="secret-reveal" style="margin:1rem 0;" aria-label="Secret code"></div>
+            <p id="leaderboardPrompt" class="daily-signin-prompt" style="display: none;">Sign in to save your result.</p>
+            <div id="leaderboardContainer" class="daily-leaderboard" style="display: none;">
+                <h3>Today's records</h3>
+                <div class="daily-records-wrap">
+                    <table class="daily-records-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Name</th>
+                                <th>Score</th>
+                                <th>Time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboardList"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="game-over-controls">
+                <a href="../index.html" class="btn btn-back-home-inline">Back to Home</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/daily-seed.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/sync.js"></script>
+    <script src="script.js?v=20260406hof"></script>
+</body>
+</html>

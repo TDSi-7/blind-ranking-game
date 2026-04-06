@@ -168,11 +168,15 @@
         });
     }
 
-    function getHallOfFame(limit) {
+    function getHallOfFame(limit, challengeId) {
         if (!Auth || !Auth.isConfigured()) return Promise.resolve([]);
         return ensureClient().then(function (client) {
             if (!client) return [];
-            return client.rpc('get_hall_of_fame', { max_rows: limit || 100 }).then(function (res) {
+            var payload = {
+                max_rows: limit || 100,
+                challenge_id_filter: challengeId || 'blind_ranking'
+            };
+            return client.rpc('get_hall_of_fame', payload).then(function (res) {
                 if (res.error) {
                     console.warn('Jones Games stats: get_hall_of_fame failed', res.error);
                     return [];

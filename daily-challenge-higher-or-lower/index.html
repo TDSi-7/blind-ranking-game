@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Higher or Lower Daily Challenge</title>
+    <link rel="icon" type="image/png" href="../blind-ranking/assets/branding/Gemini_Generated_Image_szjltrszjltrszjl.png">
+    <link rel="stylesheet" href="../higher-or-lower/style.css?v=20260407e">
+    <link rel="stylesheet" href="../daily-challenge/extra.css?v=20260406hof">
+</head>
+<body>
+    <div class="container">
+        <div class="back-to-home-container">
+            <a href="../index.html" class="btn-back-home">← Back to Home</a>
+        </div>
+
+        <div id="loginRequiredScreen" class="screen active">
+            <h1>Higher or Lower Daily</h1>
+            <p class="subtitle">Sign in to play. One run per day—same cards for everyone.</p>
+            <div class="daily-login-required-actions">
+                <a href="../index.html" class="btn btn-start">Log in</a>
+            </div>
+        </div>
+
+        <div id="alreadyCompletedScreen" class="screen">
+            <h1>Higher or Lower Daily</h1>
+            <p class="subtitle">You've already played today's challenge.</p>
+            <p id="alreadyCompletedTime" class="daily-time"></p>
+            <div id="adminResetControls" class="admin-reset-controls" style="display: none;">
+                <button id="adminResetTodayBtn" class="btn btn-secondary" type="button">Admin: Reset today (this game only)</button>
+                <p id="adminResetStatus" class="admin-reset-status"></p>
+            </div>
+            <div id="alreadyCompletedLeaderboard" class="daily-leaderboard">
+                <h3>Today's records</h3>
+                <div class="daily-records-wrap">
+                    <table class="daily-records-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Name</th>
+                                <th>Streak</th>
+                                <th>Time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="alreadyCompletedLeaderboardList"></tbody>
+                    </table>
+                </div>
+            </div>
+            <a href="../index.html" class="btn btn-primary">Back to Home</a>
+        </div>
+
+        <div id="startScreen" class="screen">
+            <h1>Higher or Lower Daily</h1>
+            <p class="subtitle">Medium — 7 hidden cards. Same deal for everyone. Timer starts on your first higher/lower guess.</p>
+            <div class="start-form">
+                <p id="dailyDate" class="daily-date"></p>
+                <div id="dailyStatusBanner" class="daily-status-banner" style="display: none;"></div>
+                <div class="form-group start-button-group">
+                    <button id="startBtn" class="btn btn-start">Start today's challenge</button>
+                </div>
+            </div>
+            <div id="preplayLeaderboardContainer" class="daily-leaderboard" style="display: none;">
+                <h3>Today's records</h3>
+                <div class="daily-records-wrap">
+                    <table class="daily-records-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Name</th>
+                                <th>Streak</th>
+                                <th>Time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="preplayLeaderboardList"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="instructions">
+                <h3 class="instructions-title">How to play</h3>
+                <ul class="instructions-list">
+                    <li><span class="bullet-label">1.</span> You start with one face-up card and 7 face-down cards—same order for all players today.</li>
+                    <li><span class="bullet-label">2.</span> Guess if the next card is higher or lower than your rightmost card (Ace low, King high).</li>
+                    <li><span class="bullet-label">3.</span> Same rank flips free and does not add to your streak.</li>
+                    <li><span class="bullet-label">4.</span> Your score is your streak when the round ends; shorter time breaks ties.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="gameScreen" class="screen">
+            <div class="game-header">
+                <a href="../index.html" class="header-home-link" style="position:absolute;left:0;top:0;">Home</a>
+                <h2>Higher or Lower Daily</h2>
+                <div class="game-meta-bar">
+                    <span class="meta-pill">Medium · 7 cards</span>
+                    <span id="streakLabel" class="meta-pill" aria-live="polite">Streak: 0</span>
+                    <span class="meta-pill">Time: <span id="timerDisplay">0:00</span></span>
+                </div>
+                <p id="statusMessage" class="status-message" role="status" aria-live="assertive"></p>
+            </div>
+
+            <div class="play-area">
+                <div class="current-wrap">
+                    <div class="current-label">Your cards (newest on the right)</div>
+                    <div id="chainCards" class="chain-cards" role="group" aria-label="Cards played this round"></div>
+                </div>
+                <div class="row-wrap">
+                    <div class="row-label">Hidden row — guess left to right</div>
+                    <div id="tableRow" class="table-row" role="group" aria-label="Hidden cards"></div>
+                </div>
+                <div class="guess-actions" role="group" aria-label="Higher or lower">
+                    <button type="button" id="higherBtn" class="btn btn-higher" disabled>Higher</button>
+                    <button type="button" id="lowerBtn" class="btn btn-lower" disabled>Lower</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="gameOverScreen" class="screen">
+            <h1 id="gameOverTitle">Game over</h1>
+            <p id="gameOverMessage" class="message"></p>
+            <p class="daily-time">Your time: <strong id="completionTimeText">0:00</strong></p>
+            <p id="leaderboardPrompt" class="daily-signin-prompt" style="display: none;">Sign in to save your result.</p>
+            <div id="leaderboardContainer" class="daily-leaderboard" style="display: none;">
+                <h3>Today's records</h3>
+                <div class="daily-records-wrap">
+                    <table class="daily-records-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Name</th>
+                                <th>Streak</th>
+                                <th>Time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboardList"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="game-over-controls">
+                <a href="../index.html" class="btn btn-back-home-inline">Back to Home</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/daily-seed.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/sync.js"></script>
+    <script src="script.js?v=20260406hof"></script>
+</body>
+</html>

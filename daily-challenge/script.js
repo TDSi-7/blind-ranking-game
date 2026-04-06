@@ -3,35 +3,17 @@
  * Numbers from seeded RNG (date-based). Timer from first number to 10th placed.
  */
 (function () {
+    var Seed = window.JonesGamesDailySeed;
+    var CHALLENGE_ID = 'blind_ranking';
+
     function getTodayDateUTC() {
-        var d = new Date();
-        var y = d.getUTCFullYear();
-        var m = String(d.getUTCMonth() + 1).padStart(2, '0');
-        var day = String(d.getUTCDate()).padStart(2, '0');
-        return y + '-' + m + '-' + day;
-    }
-
-    function hashString(str) {
-        var h = 0;
-        for (var i = 0; i < str.length; i++) {
-            h = ((h << 5) - h) + str.charCodeAt(i) | 0;
-        }
-        return Math.abs(h) >>> 0;
-    }
-
-    function mulberry32(seed) {
-        return function () {
-            var t = seed += 0x6D2B79F5;
-            t = Math.imul(t ^ t >>> 15, t | 1);
-            t ^= t + Math.imul(t ^ t >>> 7, t | 61);
-            return ((t ^ t >>> 14) >>> 0) / 4294967296;
-        };
+        return Seed ? Seed.getTodayDateUTC() : '';
     }
 
     function getTodaysNumbers() {
         var dateStr = getTodayDateUTC();
-        var seed = hashString('daily-blind-ranking-' + dateStr);
-        var rng = mulberry32(seed);
+        var seed = Seed.hashString('daily-blind-ranking-' + dateStr);
+        var rng = Seed.mulberry32(seed);
         var pool = [];
         for (var i = 1; i <= 100; i++) pool.push(i);
         var out = [];
@@ -48,27 +30,8 @@
         return m + ':' + (s < 10 ? '0' : '') + s;
     }
 
-    function getOrdinalSuffix(day) {
-        if (day % 100 >= 11 && day % 100 <= 13) return 'th';
-        var last = day % 10;
-        if (last === 1) return 'st';
-        if (last === 2) return 'nd';
-        if (last === 3) return 'rd';
-        return 'th';
-    }
-
     function formatDisplayDateUTC(dateStr) {
-        if (!dateStr) return '';
-        var parts = String(dateStr).split('-');
-        if (parts.length !== 3) return dateStr;
-        var y = Number(parts[0]);
-        var m = Number(parts[1]) - 1;
-        var d = Number(parts[2]);
-        var utcDate = new Date(Date.UTC(y, m, d));
-        if (isNaN(utcDate.getTime())) return dateStr;
-        var weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-        return weekdays[utcDate.getUTCDay()] + ' ' + d + getOrdinalSuffix(d) + ' ' + months[m];
+        return Seed ? Seed.formatDisplayDateUTC(dateStr) : '';
     }
 
     var Auth = window.JonesGamesAuth;
@@ -101,7 +64,7 @@
     var lastAttemptRecord = null;
     var lastAttemptDisplayName = 'Player';
     var attemptLockUserId = null;
-    var ATTEMPT_LOCK_KEY = 'daily_challenge_attempt_lock_v1';
+    var ATTEMPT_LOCK_KEY = 'daily_challenge_attempt_lock_v2';
     var isCurrentUserAdmin = false;
 
     function getEl(id) { return document.getElementById(id); }
@@ -164,15 +127,16 @@
     function getLocalAttemptLock(userId, dateStr) {
         if (!userId || !dateStr) return null;
         var map = getAttemptLockMap();
-        if (!map[userId] || !map[userId][dateStr]) return null;
-        return map[userId][dateStr];
+        if (!map[userId] || !map[userId][CHALLENGE_ID] || !map[userId][CHALLENGE_ID][dateStr]) return null;
+        return map[userId][CHALLENGE_ID][dateStr];
     }
 
     function setLocalAttemptLock(userId, dateStr, record) {
         if (!userId || !dateStr) return;
         var map = getAttemptLockMap();
         if (!map[userId]) map[userId] = {};
-        map[userId][dateStr] = {
+        if (!map[userId][CHALLENGE_ID]) map[userId][CHALLENGE_ID] = {};
+        map[userId][CHALLENGE_ID][dateStr] = {
             score: typeof record.score === 'number' ? record.score : 0,
             completion_time_seconds: typeof record.completion_time_seconds === 'number' ? record.completion_time_seconds : 0,
             completed_at: record.completed_at || new Date().toISOString()
@@ -183,8 +147,9 @@
     function clearLocalAttemptLock(userId, dateStr) {
         if (!userId || !dateStr) return;
         var map = getAttemptLockMap();
-        if (!map[userId] || !map[userId][dateStr]) return;
-        delete map[userId][dateStr];
+        if (!map[userId] || !map[userId][CHALLENGE_ID] || !map[userId][CHALLENGE_ID][dateStr]) return;
+        delete map[userId][CHALLENGE_ID][dateStr];
+        if (Object.keys(map[userId][CHALLENGE_ID]).length === 0) delete map[userId][CHALLENGE_ID];
         if (Object.keys(map[userId]).length === 0) delete map[userId];
         saveAttemptLockMap(map);
     }
@@ -207,7 +172,7 @@
             if (!client) {
                 return { loggedIn: true, completedToday: !!localLock, myCompletion: localLock };
             }
-            return client.from('daily_challenge_completions').select('score, completion_time_seconds, completed_at').eq('user_id', session.user.id).eq('date', dateStr).maybeSingle().then(function (res) {
+            return client.from('daily_challenge_completions').select('score, completion_time_seconds, completed_at').eq('user_id', session.user.id).eq('date', dateStr).eq('challenge_id', CHALLENGE_ID).maybeSingle().then(function (res) {
                 var data = res.data;
                 var completion = data || localLock || null;
                 return { loggedIn: true, completedToday: !!completion, myCompletion: completion };
@@ -253,7 +218,7 @@
         var client = Auth.getClient();
         if (!client) return;
         if (adminResetStatusEl) adminResetStatusEl.textContent = 'Resetting today...';
-        client.rpc('admin_reset_daily_challenge', { target_date: getTodayDateUTC() }).then(function (res) {
+        client.rpc('admin_reset_daily_challenge', { target_date: getTodayDateUTC(), target_challenge_id: CHALLENGE_ID }).then(function (res) {
             if (res.error) {
                 if (adminResetStatusEl) adminResetStatusEl.textContent = 'Reset failed: ' + (res.error.message || 'unknown error');
                 return;
@@ -344,7 +309,7 @@
             return;
         }
         listEl.innerHTML = '<tr><td colspan="4">Loading records...</td></tr>';
-        client.from('daily_challenge_completions').select('display_name, score, completion_time_seconds, completed_at').eq('date', dateStr).order('score', { ascending: false }).order('completion_time_seconds', { ascending: true }).then(function (res) {
+        client.from('daily_challenge_completions').select('display_name, score, completion_time_seconds, completed_at').eq('date', dateStr).eq('challenge_id', CHALLENGE_ID).order('score', { ascending: false }).order('completion_time_seconds', { ascending: true }).then(function (res) {
             if (res.error) {
                 var localOnlyRows = withLocalAttemptRecord([], dateStr);
                 listEl.innerHTML = localOnlyRows.length ? renderRecordRows(localOnlyRows) : '<tr><td colspan="4">Could not load records right now.</td></tr>';
@@ -600,13 +565,14 @@
 
             return displayNamePromise.then(function (displayName) {
                 lastAttemptDisplayName = displayName || 'Player';
-                return client.from('daily_challenge_completions').select('user_id').eq('user_id', user.id).eq('date', dateStr).maybeSingle().then(function (existing) {
+                return client.from('daily_challenge_completions').select('user_id').eq('user_id', user.id).eq('date', dateStr).eq('challenge_id', CHALLENGE_ID).maybeSingle().then(function (existing) {
                     if (existing.data) {
                         return { skipped: true };
                     }
                     return client.from('daily_challenge_completions').insert({
                         user_id: user.id,
                         date: dateStr,
+                        challenge_id: CHALLENGE_ID,
                         score: score,
                         completion_time_seconds: completionTimeSeconds,
                         completed_at: new Date().toISOString(),
@@ -655,6 +621,7 @@
         client.from('daily_challenge_completions')
             .select('display_name, score, completion_time_seconds, completed_at')
             .eq('date', dateStr)
+            .eq('challenge_id', CHALLENGE_ID)
             .order('score', { ascending: false })
             .order('completion_time_seconds', { ascending: true })
             .then(function (res) {
@@ -761,7 +728,7 @@
         }
 
         var playChallengeLink = getEl('playChallengeFromLeaderboardLink');
-        if (playChallengeLink) playChallengeLink.href = 'index.html?v=20260326k';
+        if (playChallengeLink) playChallengeLink.href = 'index.html?v=20260406hof';
 
         startBtn.addEventListener('click', startGame);
         nextNumberBtn.addEventListener('click', showNextNumber);
