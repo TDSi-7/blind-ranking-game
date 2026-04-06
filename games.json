@@ -27,6 +27,19 @@
       "freePlay": true
     },
     {
+      "id": "codebreaker",
+      "name": "Codebreaker",
+      "folder": "codebreaker",
+      "description": "Guess the hidden color sequence—green means right place, orange means right color, wrong slot. 7 tries!",
+      "icon": "🎯",
+      "difficultyLevels": ["Easy", "Medium", "Hard"],
+      "ageRange": "8-12",
+      "color": "#7e57c2",
+      "featured": true,
+      "creator": "Mimi",
+      "freePlay": true
+    },
+    {
       "id": "daily-challenge",
       "name": "Daily Challenge",
       "folder": "daily-challenge",

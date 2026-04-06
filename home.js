@@ -135,14 +135,21 @@ document.addEventListener('DOMContentLoaded', function () {
         return sections;
     }
 
-    function buildRail(title, sectionClass, games) {
+    function buildRail(title, sectionClass, games, railLogo) {
         var cards = (games || []).map(function (game) {
             return createGameCard(game);
         }).join('');
         cards += createComingSoonCard();
         if (!cards) cards = '<p class="empty-rail-note">More games coming soon.</p>';
+        var railHeading = '<h2 class="rail-title">' + escapeHtml(title) + '</h2>';
+        if (railLogo && railLogo.src) {
+            railHeading = '<div class="rail-title-wrap">' +
+                '<h2 class="rail-title">' + escapeHtml(title) + '</h2>' +
+                '<img class="rail-title-logo" src="' + escapeHtml(railLogo.src) + '" alt="' + escapeHtml(railLogo.alt || title) + '">' +
+                '</div>';
+        }
         return '<section class="game-rail-section ' + sectionClass + '">' +
-            '<h2 class="rail-title">' + escapeHtml(title) + '</h2>' +
+            railHeading +
             '<div class="game-rail" role="region" aria-label="' + escapeHtml(title) + '">' + cards + '</div>' +
             '</section>';
     }
@@ -154,10 +161,24 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
         var grouped = partitionGames(games);
+        var railLogos = {
+            alex: {
+                src: 'blind-ranking/assets/branding/Alex%27s%20Games%20Logo.png',
+                alt: 'Alex\'s Games Logo'
+            },
+            mimi: {
+                src: 'blind-ranking/assets/branding/Mimi%27s%20Games%20Logo.png',
+                alt: 'Mimi\'s Games Logo'
+            },
+            daily: {
+                src: 'blind-ranking/assets/branding/Daily%20challenge%20logo.png',
+                alt: 'Daily Challenge Logo'
+            }
+        };
         gamesContainer.innerHTML = [
-            buildRail('Games by Alex', 'rail-alex', grouped.alex),
-            buildRail('Games by Mimi', 'rail-mimi', grouped.mimi),
-            buildRail('Daily Challenges', 'rail-daily', grouped.daily)
+            buildRail('Games by Alex', 'rail-alex', grouped.alex, railLogos.alex),
+            buildRail('Games by Mimi', 'rail-mimi', grouped.mimi, railLogos.mimi),
+            buildRail('Daily Challenges', 'rail-daily', grouped.daily, railLogos.daily)
         ].join('');
     }
 

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Codebreaker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="back-to-home-container">
+            <a href="../index.html" class="btn-back-home">← Back to Home</a>
+        </div>
+
+        <!-- Start Screen -->
+        <div id="startScreen" class="screen active">
+            <h1>Codebreaker</h1>
+            <p class="subtitle">Guess the hidden color sequence in 7 tries. Green = right place. Orange = right color, wrong place.</p>
+            <div class="start-form">
+                <div class="form-group">
+                    <label>Difficulty</label>
+                    <div class="option-buttons" id="difficultyOptions" role="group" aria-label="Difficulty">
+                        <button type="button" class="btn-option" data-difficulty="easy">Easy (5 colors)</button>
+                        <button type="button" class="btn-option" data-difficulty="medium">Medium (7 colors)</button>
+                        <button type="button" class="btn-option" data-difficulty="hard">Hard (10 colors)</button>
+                    </div>
+                </div>
+                <div class="form-group start-button-group">
+                    <button type="button" id="startBtn" class="btn btn-start" disabled>Start game</button>
+                </div>
+            </div>
+            <div class="instructions">
+                <h3 class="instructions-title">How to play</h3>
+                <ul class="instructions-list">
+                    <li><span class="bullet-label">1.</span> Pick Easy, Medium, or Hard—the computer hides a sequence of that length.</li>
+                    <li><span class="bullet-label">2.</span> Tap colors below the board to fill each slot left to right.</li>
+                    <li><span class="bullet-label">3.</span> Submit your guess. Green dots mean correct color and position; orange means right color, wrong slot.</li>
+                    <li><span class="bullet-label">4.</span> You have 7 attempts to crack the code. Colors may repeat!</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="gameScreen" class="screen">
+            <div class="game-header">
+                <h2>Codebreaker</h2>
+                <div class="game-meta-bar">
+                    <span id="difficultyLabel" class="meta-pill"></span>
+                    <span id="attemptsLabel" class="meta-pill"></span>
+                </div>
+                <p id="statusMessage" class="status-message" role="status"></p>
+            </div>
+
+            <div id="board" class="board" aria-label="Guess board"></div>
+
+            <div class="palette-section">
+                <div class="palette-label">Tap a color to fill the next empty slot in the highlighted row</div>
+                <div id="palette" class="palette" role="group" aria-label="Color palette"></div>
+                <div class="guess-actions">
+                    <button type="button" id="backspaceBtn" class="btn btn-secondary">Remove last</button>
+                    <button type="button" id="clearRowBtn" class="btn btn-secondary">Clear row</button>
+                    <button type="button" id="submitBtn" class="btn btn-primary" disabled>Submit guess</button>
+                </div>
+            </div>
+
+            <div class="game-controls">
+                <button type="button" id="newGameBtn" class="btn btn-outline">New game (same difficulty)</button>
+                <button type="button" id="changeDifficultyBtn" class="btn btn-outline">Change difficulty</button>
+            </div>
+        </div>
+
+        <!-- Game Over overlay -->
+        <div id="gameOverModal" class="modal" style="display: none;" role="dialog" aria-labelledby="gameOverTitle" aria-modal="true">
+            <div class="modal-backdrop"></div>
+            <div class="modal-content">
+                <h2 id="gameOverTitle" class="modal-title">You won!</h2>
+                <p id="gameOverBody" class="modal-body"></p>
+                <div id="secretReveal" class="secret-reveal" aria-label="Secret code"></div>
+                <div class="modal-actions">
+                    <button type="button" id="playAgainBtn" class="btn btn-primary">Play again</button>
+                    <a href="../index.html" id="modalHomeBtn" class="btn btn-outline">Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
