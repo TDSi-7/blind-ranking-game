@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Codebreaker</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=20260407b">
 </head>
 <body>
     <div class="container">
@@ -33,7 +33,7 @@
                 <h3 class="instructions-title">How to play</h3>
                 <ul class="instructions-list">
                     <li><span class="bullet-label">1.</span> Pick Easy, Medium, or Hard—the computer hides a sequence of that length.</li>
-                    <li><span class="bullet-label">2.</span> Tap colors below the board to fill each slot left to right.</li>
+                    <li><span class="bullet-label">2.</span> Tap colors to fill each slot left to right, then submit.</li>
                     <li><span class="bullet-label">3.</span> Submit your guess. Green dots mean correct color and position; orange means right color, wrong slot.</li>
                     <li><span class="bullet-label">4.</span> You have 7 attempts to crack the code. Colors may repeat!</li>
                 </ul>
@@ -51,15 +51,19 @@
                 <p id="statusMessage" class="status-message" role="status"></p>
             </div>
 
-            <div id="board" class="board" aria-label="Guess board"></div>
+            <div class="game-play-main">
+                <div class="palette-section">
+                    <div class="palette-label">Tap a color to fill the next empty slot in the highlighted row</div>
+                    <div id="palette" class="palette" role="group" aria-label="Color palette"></div>
+                    <div class="guess-actions">
+                        <button type="button" id="backspaceBtn" class="btn btn-secondary">Remove last</button>
+                        <button type="button" id="clearRowBtn" class="btn btn-secondary">Clear row</button>
+                        <button type="button" id="submitBtn" class="btn btn-primary" disabled>Submit guess</button>
+                    </div>
+                </div>
 
-            <div class="palette-section">
-                <div class="palette-label">Tap a color to fill the next empty slot in the highlighted row</div>
-                <div id="palette" class="palette" role="group" aria-label="Color palette"></div>
-                <div class="guess-actions">
-                    <button type="button" id="backspaceBtn" class="btn btn-secondary">Remove last</button>
-                    <button type="button" id="clearRowBtn" class="btn btn-secondary">Clear row</button>
-                    <button type="button" id="submitBtn" class="btn btn-primary" disabled>Submit guess</button>
+                <div id="boardArea" class="board-area">
+                    <div id="board" class="board" aria-label="Guess board"></div>
                 </div>
             </div>
 
@@ -84,6 +88,6 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="script.js?v=20260407b"></script>
 </body>
 </html>

@@ -942,6 +942,29 @@ body::before {
     flex-shrink: 0;
 }
 
+.game-rail-outer {
+    display: flex;
+    align-items: stretch;
+    gap: 6px;
+    width: 100%;
+    min-width: 0;
+}
+
+.game-rail-scroll-hint {
+    display: none;
+    flex: 0 0 auto;
+    width: 26px;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    font-size: 1rem;
+    line-height: 1;
+    color: #64748b;
+    user-select: none;
+    pointer-events: none;
+    opacity: 0.9;
+}
+
 .game-rail {
     display: flex;
     gap: 12px;
@@ -949,6 +972,8 @@ body::before {
     padding-bottom: 6px;
     scroll-snap-type: x proximity;
     justify-content: flex-start;
+    flex: 1;
+    min-width: 0;
 }
 
 .game-rail .game-card {
@@ -1103,5 +1128,8 @@ body::before {
     .rail-title-logo {
         height: 72px;
         max-width: min(75vw, 360px);
+    }
+    .game-rail-scroll-hint {
+        display: flex;
     }
 }

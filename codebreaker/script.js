@@ -168,6 +168,16 @@
                 /* keep modal until explicit action */
             });
         }
+
+        var resizeTimer = null;
+        window.addEventListener('resize', function () {
+            if (!self.gameScreen || !self.gameScreen.classList.contains('active')) return;
+            if (self.gameStatus === 'idle') return;
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(function () {
+                self.renderBoard();
+            }, 120);
+        });
     };
 
     CodebreakerGame.prototype.hideModal = function () {
@@ -282,78 +292,113 @@
         }
     };
 
+    function getBoardRowOrder(game) {
+        var mobile = typeof window.matchMedia === 'function' && window.matchMedia('(max-width: 640px)').matches;
+        if (!mobile) {
+            var order = [];
+            var i;
+            for (i = 0; i < MAX_ATTEMPTS; i++) order.push(i);
+            return order;
+        }
+        var playing = game.gameStatus === 'playing';
+        var n = game.attempts.length;
+        var out = [];
+        var r;
+        if (playing && n < MAX_ATTEMPTS) {
+            out.push(n);
+        }
+        if (n > 0) {
+            for (r = n - 1; r >= 0; r--) {
+                out.push(r);
+            }
+        }
+        if (playing) {
+            for (r = n + 1; r < MAX_ATTEMPTS; r++) {
+                out.push(r);
+            }
+        }
+        return out;
+    }
+
+    CodebreakerGame.prototype.buildBoardRow = function (row) {
+        var cfg = this.getConfig();
+        if (!cfg) return null;
+        var rowEl = document.createElement('div');
+        var isLocked = row < this.attempts.length;
+        var isActive = !isLocked && row === this.getActiveRowIndex() && this.gameStatus === 'playing';
+        rowEl.className = 'board-row';
+        if (isLocked) rowEl.classList.add('locked');
+        if (isActive) rowEl.classList.add('active');
+
+        var slotsWrap = document.createElement('div');
+        slotsWrap.className = 'slots';
+
+        var guess;
+        var feedback;
+        if (isLocked) {
+            guess = this.attempts[row].guess;
+            feedback = this.attempts[row].feedback;
+        } else if (isActive) {
+            guess = this.currentGuess;
+            feedback = null;
+        } else {
+            guess = [];
+            feedback = null;
+        }
+
+        var col;
+        for (col = 0; col < cfg.codeLength; col++) {
+            var slot = document.createElement('div');
+            slot.className = 'slot';
+            if (!isLocked && !isActive) {
+                slot.classList.add('empty');
+            } else if (col < guess.length) {
+                var colorName = guess[col];
+                slot.style.background = COLOR_HEX[colorName] || '#ccc';
+                slot.setAttribute('title', colorName);
+                if (colorName === 'Black' || colorName === 'Purple' || colorName === 'Brown') {
+                    slot.style.borderColor = '#444';
+                }
+            } else {
+                slot.classList.add('empty');
+            }
+            slotsWrap.appendChild(slot);
+        }
+
+        var feedbackCol = document.createElement('div');
+        feedbackCol.className = 'feedback-dots';
+        if (feedback) {
+            var fr = document.createElement('div');
+            fr.className = 'feedback-row';
+            for (col = 0; col < feedback.length; col++) {
+                var dot = document.createElement('span');
+                dot.className = 'feedback-dot';
+                if (feedback[col] === 'green') dot.classList.add('green');
+                else if (feedback[col] === 'orange') dot.classList.add('orange');
+                else dot.classList.add('empty');
+                dot.setAttribute('aria-label', feedback[col] === 'green' ? 'Correct' : feedback[col] === 'orange' ? 'Wrong position' : 'Empty');
+                fr.appendChild(dot);
+            }
+            feedbackCol.appendChild(fr);
+        } else if (isActive) {
+            feedbackCol.innerHTML = '<span class="meta-pill" style="border:none;font-size:0.75em;">Your turn</span>';
+        }
+
+        rowEl.appendChild(slotsWrap);
+        rowEl.appendChild(feedbackCol);
+        return rowEl;
+    };
+
     CodebreakerGame.prototype.renderBoard = function () {
         var cfg = this.getConfig();
         if (!cfg) return;
         this.boardEl.setAttribute('data-slots', String(cfg.codeLength));
         this.boardEl.innerHTML = '';
-        var row;
-
-        for (row = 0; row < MAX_ATTEMPTS; row++) {
-            var rowEl = document.createElement('div');
-            var isLocked = row < this.attempts.length;
-            var isActive = !isLocked && row === this.getActiveRowIndex() && this.gameStatus === 'playing';
-            rowEl.className = 'board-row';
-            if (isLocked) rowEl.classList.add('locked');
-            if (isActive) rowEl.classList.add('active');
-
-            var slotsWrap = document.createElement('div');
-            slotsWrap.className = 'slots';
-
-            var guess;
-            var feedback;
-            if (isLocked) {
-                guess = this.attempts[row].guess;
-                feedback = this.attempts[row].feedback;
-            } else if (isActive) {
-                guess = this.currentGuess;
-                feedback = null;
-            } else {
-                guess = [];
-                feedback = null;
-            }
-
-            var col;
-            for (col = 0; col < cfg.codeLength; col++) {
-                var slot = document.createElement('div');
-                slot.className = 'slot';
-                if (!isLocked && !isActive) {
-                    slot.classList.add('empty');
-                } else if (col < guess.length) {
-                    var colorName = guess[col];
-                    slot.style.background = COLOR_HEX[colorName] || '#ccc';
-                    slot.setAttribute('title', colorName);
-                    if (colorName === 'Black' || colorName === 'Purple' || colorName === 'Brown') {
-                        slot.style.borderColor = '#444';
-                    }
-                } else {
-                    slot.classList.add('empty');
-                }
-                slotsWrap.appendChild(slot);
-            }
-
-            var feedbackCol = document.createElement('div');
-            feedbackCol.className = 'feedback-dots';
-            if (feedback) {
-                var fr = document.createElement('div');
-                fr.className = 'feedback-row';
-                for (col = 0; col < feedback.length; col++) {
-                    var dot = document.createElement('span');
-                    dot.className = 'feedback-dot';
-                    if (feedback[col] === 'green') dot.classList.add('green');
-                    else if (feedback[col] === 'orange') dot.classList.add('orange');
-                    else dot.classList.add('empty');
-                    dot.setAttribute('aria-label', feedback[col] === 'green' ? 'Correct' : feedback[col] === 'orange' ? 'Wrong position' : 'Empty');
-                    fr.appendChild(dot);
-                }
-                feedbackCol.appendChild(fr);
-            } else if (isActive) {
-                feedbackCol.innerHTML = '<span class="meta-pill" style="border:none;font-size:0.75em;">Your turn</span>';
-            }
-
-            rowEl.appendChild(slotsWrap);
-            rowEl.appendChild(feedbackCol);
-            this.boardEl.appendChild(rowEl);
+        var order = getBoardRowOrder(this);
+        var idx;
+        for (idx = 0; idx < order.length; idx++) {
+            var built = this.buildBoardRow(order[idx]);
+            if (built) this.boardEl.appendChild(built);
         }
     };
 

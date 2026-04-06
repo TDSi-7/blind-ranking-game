@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var Auth = window.JonesGamesAuth;
     var DAILY_CHALLENGE_ASSET_VERSION = '20260326k';
     /** Bump when games.json changes so CDN/browsers fetch the new catalog. */
-    var GAMES_CATALOG_VERSION = '20260407a';
+    var GAMES_CATALOG_VERSION = '20260407b';
     var isLoggedIn = false;
 
     function escapeHtml(s) {
@@ -152,7 +152,11 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         return '<section class="game-rail-section ' + sectionClass + '">' +
             railHeading +
+            '<div class="game-rail-outer">' +
+            '<span class="game-rail-scroll-hint game-rail-scroll-hint--left" aria-hidden="true">◀</span>' +
             '<div class="game-rail" role="region" aria-label="' + escapeHtml(title) + '">' + cards + '</div>' +
+            '<span class="game-rail-scroll-hint game-rail-scroll-hint--right" aria-hidden="true">▶</span>' +
+            '</div>' +
             '</section>';
     }
 
