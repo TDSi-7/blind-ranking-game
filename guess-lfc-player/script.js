@@ -3,6 +3,15 @@
 
     var GAME_ID = 'guess-lfc-player';
     var WRONG_PENALTIES = [5, 4, 3, 2, 1];
+    function formatSoldTo(value) {
+        var sold = String(value || '').trim();
+        if (!sold) return '—';
+        if (/^still at /i.test(sold) || /^still with /i.test(sold) || /^current club$/i.test(sold)) {
+            return 'Still at club';
+        }
+        return sold;
+    }
+
     var CLUES = [
         { key: 'club', label: 'Club', cost: 25, format: function (p) { return String(p.club || '—'); } },
         { key: 'debutYear', label: 'Year of Debut', cost: 5, format: function (p) { return String(p.debutYear || '—'); } },
@@ -10,7 +19,7 @@
         { key: 'shirtNumber', label: 'Shirt Number', cost: 10, format: function (p) { return String(p.shirtNumber != null ? p.shirtNumber : '—'); } },
         { key: 'boughtFrom', label: 'Bought from', cost: 5, format: function (p) { return String(p.boughtFrom || '—'); } },
         { key: 'feePaid', label: 'Fee Paid', cost: 5, format: function (p) { return String(p.feePaid || '—'); } },
-        { key: 'soldTo', label: 'Sold to', cost: 3, format: function (p) { return String(p.soldTo || '—'); } },
+        { key: 'soldTo', label: 'Sold to', cost: 3, format: function (p) { return formatSoldTo(p.soldTo); } },
         { key: 'feeReceived', label: 'Fee Received', cost: 2, format: function (p) { return String(p.feeReceived || '—'); } },
         { key: 'gamesPlayed', label: 'Games played', cost: 6, format: function (p) { return String(p.gamesPlayed != null ? p.gamesPlayed : '—'); } },
         { key: 'goals', label: 'Goals', cost: 5, format: function (p) { return String(p.goals != null ? p.goals : '—'); } },
@@ -28,28 +37,16 @@
         return stripDiacritics(String(s || '').toLowerCase().trim()).replace(/\s+/g, ' ');
     }
 
-    /**
-     * Name autocomplete: one letter matches any word start (first or surname).
-     * Two letters match only the first word (so "Ma" keeps Mohamed…, drops Sadio Mane).
-     * Three+ letters match first word or last word prefix (so "Sal" can match … Salah).
-     */
+    /** Name autocomplete: match query against any name token prefix. */
     function playerMatchesNameFilter(player, query) {
         var q = normalizeName(query);
         if (!q) return false;
         var tokens = normalizeName(player.name).split(/\s+/).filter(Boolean);
         if (!tokens.length) return false;
         var i;
-        if (q.length === 1) {
-            for (i = 0; i < tokens.length; i++) {
-                if (tokens[i].indexOf(q) === 0) return true;
-            }
-            return false;
+        for (i = 0; i < tokens.length; i++) {
+            if (tokens[i].indexOf(q) === 0) return true;
         }
-        if (q.length === 2) {
-            return tokens[0].indexOf(q) === 0;
-        }
-        if (tokens[0].indexOf(q) === 0) return true;
-        if (tokens.length >= 2 && tokens[tokens.length - 1].indexOf(q) === 0) return true;
         return false;
     }
 
@@ -259,7 +256,7 @@
         this.guessFeedback = document.getElementById('guessFeedback');
         this.guessSubmitBtn = document.getElementById('guessSubmitBtn');
         this.clueGrid = document.getElementById('clueGrid');
-        this.newRoundBtn = document.getElementById('newRoundBtn');
+        this.revealBtn = document.getElementById('revealBtn');
         this.endModal = document.getElementById('endModal');
         this.endModalTitle = document.getElementById('endModalTitle');
         this.endModalBody = document.getElementById('endModalBody');
@@ -274,7 +271,9 @@
             e.preventDefault();
             self.submitGuess();
         });
-        this.newRoundBtn.addEventListener('click', function () { self.startRound(); });
+        if (this.revealBtn) {
+            this.revealBtn.addEventListener('click', function () { self.revealPlayer(); });
+        }
         this.endPlayAgainBtn.addEventListener('click', function () {
             self.endModal.style.display = 'none';
             self.startRound();
@@ -389,7 +388,7 @@
 
     Game.prototype.loadData = function () {
         var self = this;
-        fetch('data/players.json?v=20260415a')
+        fetch('data/players.json?v=20260416a')
             .then(function (r) {
                 if (!r.ok) throw new Error('load failed');
                 return r.json();
@@ -434,6 +433,17 @@
         this.updateHud();
         this.renderClues();
         this.guessInput.focus();
+    };
+
+    Game.prototype.revealPlayer = function () {
+        if (this.ended || !this.secret) return;
+        this.ended = true;
+        this.guessInput.disabled = true;
+        this.guessSubmitBtn.disabled = true;
+        this.hideSuggestions();
+        this.guessFeedback.textContent = 'Player revealed. Round over.';
+        this.renderClues();
+        this.showEnd(false, clampScore(this.score), true);
     };
 
     Game.prototype.updateHud = function () {
@@ -547,7 +557,7 @@
         }
     };
 
-    Game.prototype.showEnd = function (won, finalScore) {
+    Game.prototype.showEnd = function (won, finalScore, gaveUp) {
         this.endModal.style.display = 'flex';
         if (won) {
             this.endModalTitle.textContent = 'Correct!';
@@ -558,9 +568,10 @@
                 finalScore +
                 ' points.';
         } else {
-            this.endModalTitle.textContent = 'Out of guesses';
-            this.endModalBody.textContent =
-                'The player was ' + this.secret.name + '. Better luck next time!';
+            this.endModalTitle.textContent = gaveUp ? 'Player revealed' : 'Out of guesses';
+            this.endModalBody.textContent = gaveUp
+                ? 'The player was ' + this.secret.name + '. Start a new game whenever you are ready.'
+                : 'The player was ' + this.secret.name + '. Better luck next time!';
         }
     };
 
