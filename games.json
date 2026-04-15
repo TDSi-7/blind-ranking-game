@@ -28,9 +28,9 @@
     },
     {
       "id": "guess-lfc-player",
-      "name": "Guess the LFC Player",
+      "name": "Guess the Premier League Player",
       "folder": "guess-lfc-player",
-      "description": "See only their position—buy clues and guess the Liverpool player. Five guesses, 100 points to spend!",
+      "description": "See only their position—buy clues and guess a player from the Big 6 clubs. Five guesses, 100 points to spend!",
       "icon": "⚽",
       "difficultyLevels": ["Easy", "Medium", "Hard"],
       "ageRange": "8-12",
