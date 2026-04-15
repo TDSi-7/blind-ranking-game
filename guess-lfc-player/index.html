@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guess the LFC Player</title>
+    <title>Guess the Premier League Player</title>
     <link rel="icon" type="image/png" href="../blind-ranking/assets/branding/Gemini_Generated_Image_szjltrszjltrszjl.png">
     <link rel="stylesheet" href="style.css?v=20260407c">
 </head>
@@ -21,8 +21,8 @@
                     class="lfc-logo"
                 />
             </div>
-            <h1>Guess the LFC Player</h1>
-            <p class="subtitle">You only see their position. Clues cost points. Five guesses max—can you name them?</p>
+            <h1>Guess the Premier League Player</h1>
+            <p class="subtitle">Players are from Liverpool, Man Utd, Man City, Arsenal, Tottenham, and Chelsea (2016-2026). You only see position to start.</p>
             <div class="start-panel">
                 <p class="best-line">Best score: <strong id="bestScoreStart">—</strong></p>
                 <button type="button" id="startBtn" class="btn btn-primary">Start game</button>
@@ -32,7 +32,7 @@
                 <ol class="instructions-list">
                     <li>You start with <strong>100 points</strong>. The only thing shown at first is the player’s <strong>position</strong> (e.g. Goalkeeper, Defender, Midfielder, Forward).</li>
                     <li>Type a name and press <strong>Guess</strong>. Each wrong guess costs points: <strong>5</strong>, then <strong>4</strong>, then <strong>3</strong>, then <strong>2</strong>, then <strong>1</strong> (1st miss through 5th miss). You have <strong>5</strong> guesses per round.</li>
-                    <li><strong>Clues</strong> are face-down cards—tap one to spend points and reveal it. Each clue can only be bought once per round.</li>
+                    <li><strong>Clues</strong> are face-down cards—tap one to spend points and reveal it. The new <strong>Club</strong> clue costs <strong>25</strong> points and each clue can only be bought once per round.</li>
                     <li>If you guess correctly, your <strong>score</strong> for that round is the points you have left (after wrong guesses and clues).</li>
                 </ol>
             </div>
@@ -75,7 +75,7 @@
 
             <section class="clues-section" aria-labelledby="cluesHeading">
                 <h3 id="cluesHeading" class="clues-heading">Clues</h3>
-                <p class="clues-hint">Tap a card to buy and reveal. You can’t afford a clue if your score is too low.</p>
+                <p class="clues-hint">Tap a card to buy and reveal. Club is 25 points; all clue prices are rebalanced so scores cannot go below 0.</p>
                 <div id="clueGrid" class="clue-grid"></div>
             </section>
 
@@ -98,6 +98,6 @@
     </div>
 
     <script src="../js/profiles.js"></script>
-    <script src="script.js?v=20260407b"></script>
+    <script src="script.js?v=20260415a"></script>
 </body>
 </html>

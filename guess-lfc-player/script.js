@@ -4,17 +4,18 @@
     var GAME_ID = 'guess-lfc-player';
     var WRONG_PENALTIES = [5, 4, 3, 2, 1];
     var CLUES = [
+        { key: 'club', label: 'Club', cost: 25, format: function (p) { return String(p.club || '—'); } },
         { key: 'debutYear', label: 'Year of Debut', cost: 5, format: function (p) { return String(p.debutYear || '—'); } },
-        { key: 'nationality', label: 'Nationality', cost: 20, format: function (p) { return String(p.nationality || '—'); } },
-        { key: 'shirtNumber', label: 'Shirt Number', cost: 15, format: function (p) { return String(p.shirtNumber != null ? p.shirtNumber : '—'); } },
+        { key: 'nationality', label: 'Nationality', cost: 12, format: function (p) { return String(p.nationality || '—'); } },
+        { key: 'shirtNumber', label: 'Shirt Number', cost: 10, format: function (p) { return String(p.shirtNumber != null ? p.shirtNumber : '—'); } },
         { key: 'boughtFrom', label: 'Bought from', cost: 5, format: function (p) { return String(p.boughtFrom || '—'); } },
         { key: 'feePaid', label: 'Fee Paid', cost: 5, format: function (p) { return String(p.feePaid || '—'); } },
         { key: 'soldTo', label: 'Sold to', cost: 3, format: function (p) { return String(p.soldTo || '—'); } },
         { key: 'feeReceived', label: 'Fee Received', cost: 2, format: function (p) { return String(p.feeReceived || '—'); } },
-        { key: 'gamesPlayed', label: 'Games played', cost: 10, format: function (p) { return String(p.gamesPlayed != null ? p.gamesPlayed : '—'); } },
-        { key: 'goals', label: 'Goals', cost: 8, format: function (p) { return String(p.goals != null ? p.goals : '—'); } },
+        { key: 'gamesPlayed', label: 'Games played', cost: 6, format: function (p) { return String(p.gamesPlayed != null ? p.gamesPlayed : '—'); } },
+        { key: 'goals', label: 'Goals', cost: 5, format: function (p) { return String(p.goals != null ? p.goals : '—'); } },
         { key: 'assists', label: 'Assists', cost: 2, format: function (p) { return String(p.assists != null ? p.assists : '—'); } },
-        { key: 'appearances', label: 'Appearances', cost: 10, format: function (p) { return String(p.appearances != null ? p.appearances : '—'); } }
+        { key: 'appearances', label: 'Appearances', cost: 5, format: function (p) { return String(p.appearances != null ? p.appearances : '—'); } }
     ];
 
     function stripDiacritics(s) {
@@ -189,6 +190,10 @@
 
     function clampScore(n) {
         return Math.max(0, n);
+    }
+
+    function spendPoints(current, cost) {
+        return clampScore(current - Math.max(0, cost || 0));
     }
 
     function loadBestScore() {
@@ -384,7 +389,7 @@
 
     Game.prototype.loadData = function () {
         var self = this;
-        fetch('data/players.json?v=20260407a')
+        fetch('data/players.json?v=20260415a')
             .then(function (r) {
                 if (!r.ok) throw new Error('load failed');
                 return r.json();
@@ -495,7 +500,7 @@
         }
         if (!c || this.revealed[key]) return;
         if (this.score < c.cost) return;
-        this.score -= c.cost;
+        this.score = spendPoints(this.score, c.cost);
         this.revealed[key] = true;
         this.updateHud();
         this.renderClues();
@@ -526,7 +531,7 @@
         if (this.wrongGuesses >= 5) return;
 
         var penalty = WRONG_PENALTIES[this.wrongGuesses];
-        this.score -= penalty;
+        this.score = spendPoints(this.score, penalty);
         this.wrongGuesses++;
         this.guessFeedback.textContent = 'Not quite — that cost ' + penalty + ' points.';
         this.updateHud();
