@@ -94,6 +94,19 @@
       "dailyChallenge": true
     },
     {
+      "id": "taskmaster",
+      "name": "Taskmaster — The TDS Cup",
+      "folder": "taskmaster",
+      "description": "5 tasks. 9 contestants. One trophy.",
+      "icon": "📮",
+      "difficultyLevels": [],
+      "ageRange": "All",
+      "color": "#8B1A1A",
+      "featured": true,
+      "creator": "Simon",
+      "freePlay": true
+    },
+    {
       "id": "daily-codebreaker",
       "name": "Codebreaker Daily Challenge",
       "folder": "daily-challenge-codebreaker",

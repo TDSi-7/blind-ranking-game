@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TDS Trophy — Scoreboard</title>
+  <link rel="stylesheet" href="styles/taskmaster.css?v=20260611k">
+</head>
+<body>
+  <main class="tm-page scoreboard-page">
+    <nav class="tm-top-nav">
+      <a href="index.html" class="tm-link-back">← Back to Tasks</a>
+    </nav>
+
+    <header class="tm-header scoreboard-hero">
+      <p class="scoreboard-eyebrow">The TDS Cup</p>
+      <h1 class="tm-title">🏆 Scoreboard</h1>
+      <p class="tm-subtitle">Track points round by round — then crown your champion.</p>
+    </header>
+
+    <section id="scoreboard-setup" class="scoreboard-setup active">
+      <div class="scoreboard-panel scoreboard-panel--setup">
+        <h2 class="scoreboard-panel-title">Who's playing?</h2>
+        <p class="scoreboard-panel-lead">Enter at least two names to get started. Add more contestants if you need them.</p>
+        <form id="setup-form" onsubmit="return false;">
+          <div class="setup-grid"></div>
+          <div class="scoreboard-actions setup-add-row">
+            <button type="button" id="add-contestant-btn" class="tm-btn">+ Add Contestant</button>
+          </div>
+          <div class="scoreboard-actions">
+            <button type="button" id="start-games-btn" class="tm-btn tm-btn-primary tm-btn-lg">Start the Games →</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section id="scoreboard-scoring" class="scoreboard-scoring">
+      <div class="scoreboard-panel">
+        <div id="round-tabs" class="round-tabs" role="tablist" aria-label="Round selector"></div>
+        <div class="round-header">
+          <h2 id="round-title" class="round-title"></h2>
+          <p id="round-description" class="round-description"></p>
+        </div>
+        <div id="scoring-cards" class="scoring-cards" aria-live="polite"></div>
+        <div class="scoreboard-actions">
+          <button type="button" id="view-leaderboard-btn" class="tm-btn tm-btn-primary tm-btn-lg">View Leaderboard →</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="scoreboard-leaderboard" class="scoreboard-leaderboard">
+      <div class="scoreboard-panel">
+        <h2 class="scoreboard-panel-title">Final Standings</h2>
+        <p class="scoreboard-panel-lead">Use +/− to award or deduct bonus points as Taskmaster.</p>
+        <ol id="leaderboard-list" class="leaderboard-list"></ol>
+        <div class="scoreboard-actions">
+          <button type="button" id="back-to-scoring-btn" class="tm-btn">← Back to Scoring</button>
+        </div>
+        <div class="scoreboard-actions scoreboard-actions--split">
+          <button type="button" id="winners-podium-btn" class="tm-btn tm-btn-gold tm-btn-lg">🏆 Winner's Podium</button>
+          <button type="button" id="reset-everything-btn" class="tm-btn">Reset Everything</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="scoreboard-podium" class="scoreboard-podium" aria-live="polite">
+      <div class="scoreboard-panel podium-panel">
+        <p class="podium-eyebrow">The TDS Cup</p>
+        <div class="podium-trophy" aria-hidden="true">🏆</div>
+        <h2 class="podium-announce">And the winner is…</h2>
+        <p id="podium-winner-name" class="podium-winner-name"></p>
+        <p id="podium-winner-sub" class="podium-winner-sub"></p>
+        <div class="podium-mini-table-wrap">
+          <table class="podium-mini-table">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Contestant</th>
+                <th scope="col">Pts</th>
+              </tr>
+            </thead>
+            <tbody id="podium-mini-table-body"></tbody>
+          </table>
+        </div>
+        <div class="scoreboard-actions">
+          <button type="button" id="podium-back-btn" class="tm-btn">← Back to Leaderboard</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="reset-confirm-modal" class="confirm-modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="reset-confirm-title">
+    <div class="confirm-modal-panel">
+      <h2 id="reset-confirm-title" class="confirm-modal-title">Reset everything?</h2>
+      <p class="confirm-modal-text">This will clear all contestant names, scores, Taskmaster adjustments, and task progress. It cannot be undone.</p>
+      <div class="confirm-modal-actions">
+        <button type="button" id="reset-confirm-cancel" class="tm-btn">Cancel</button>
+        <button type="button" id="reset-confirm-yes" class="tm-btn tm-btn-primary">Yes, reset everything</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="scripts/taskmaster.js?v=20260611k"></script>
+</body>
+</html>

@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var Auth = window.JonesGamesAuth;
     var DAILY_CHALLENGE_ASSET_VERSION = '20260406hof';
     /** Bump when games.json changes so CDN/browsers fetch the new catalog. */
-    var GAMES_CATALOG_VERSION = '20260415pl';
+    var GAMES_CATALOG_VERSION = '20260611tm';
     var isLoggedIn = false;
 
     function escapeHtml(s) {
@@ -111,6 +111,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var sections = {
             alex: [],
             mimi: [],
+            simon: [],
             daily: []
         };
 
@@ -126,6 +127,10 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             if (creator === 'mimi') {
                 sections.mimi.push(game);
+                return;
+            }
+            if (creator === 'simon') {
+                sections.simon.push(game);
                 return;
             }
             if (creator.indexOf('daily') >= 0) {
@@ -181,11 +186,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 alt: 'Daily Challenge Logo'
             }
         };
-        gamesContainer.innerHTML = [
+        var rails = [
             buildRail('Games by Alex', 'rail-alex', grouped.alex, railLogos.alex),
-            buildRail('Games by Mimi', 'rail-mimi', grouped.mimi, railLogos.mimi),
-            buildRail('Daily Challenges', 'rail-daily', grouped.daily, railLogos.daily)
-        ].join('');
+            buildRail('Games by Mimi', 'rail-mimi', grouped.mimi, railLogos.mimi)
+        ];
+        if (grouped.simon.length) {
+            rails.push(buildRail('Special Events', 'rail-simon', grouped.simon, null));
+        }
+        rails.push(buildRail('Daily Challenges', 'rail-daily', grouped.daily, railLogos.daily));
+        gamesContainer.innerHTML = rails.join('');
     }
 
     function createGameCard(game) {

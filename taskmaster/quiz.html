@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <title>Task Three — Quiz Time</title>
+  <link rel="stylesheet" href="styles/taskmaster.css?v=20260611h">
+</head>
+<body>
+  <main class="tm-page quiz-page">
+    <header class="tm-header quiz-header">
+      <h1 class="tm-title quiz-title">Quiz Time</h1>
+      <p class="tm-subtitle">Task Three — 2016 Edition</p>
+      <p id="quiz-phase-label" class="quiz-phase-label">Questions</p>
+    </header>
+
+    <p id="quiz-progress" class="quiz-progress" aria-live="polite">Question 1 of 10</p>
+
+    <div id="quiz-slide" class="quiz-slide" aria-live="polite"></div>
+
+    <nav class="quiz-nav" aria-label="Quiz navigation">
+      <button type="button" id="quiz-back" class="tm-btn">← Back</button>
+      <button type="button" id="quiz-next" class="tm-btn tm-btn-primary">Next Question →</button>
+      <a href="index.html" class="tm-btn">Return to Home</a>
+    </nav>
+
+    <div class="quiz-extra-actions">
+      <button type="button" id="quiz-mode-toggle" class="tm-btn tm-btn-gold">Skip to Answers</button>
+      <button type="button" id="quiz-new" class="tm-btn">Shuffle &amp; Restart</button>
+    </div>
+  </main>
+
+  <script src="scripts/quiz-data.js?v=20260611h"></script>
+  <script src="scripts/quiz.js?v=20260611h"></script>
+</body>
+</html>

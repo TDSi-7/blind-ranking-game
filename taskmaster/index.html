@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Taskmaster — The TDS Cup</title>
+  <link rel="stylesheet" href="styles/taskmaster.css?v=20260611i">
+</head>
+<body>
+  <main class="tm-page">
+    <nav class="tm-top-nav">
+      <a href="../index.html" class="tm-link-back">← Back to Jones Games</a>
+    </nav>
+
+    <header class="tm-header">
+      <h1 class="tm-title">The TDS Cup</h1>
+      <p class="tm-subtitle">Simon's 10th Anniversary Taskmaster</p>
+    </header>
+
+    <section class="tm-envelope-grid" aria-label="Task envelopes">
+      <div class="envelope-wrap" data-task-id="task-1">
+        <div class="envelope-shell">
+          <button type="button" class="envelope" data-task="task-1" aria-label="Open Task One">
+            <span class="wax-seal" aria-hidden="true">I</span>
+          </button>
+          <span class="task-complete-overlay" aria-hidden="true">✓</span>
+        </div>
+        <span class="envelope-label">Task One</span>
+      </div>
+
+      <div class="envelope-wrap" data-task-id="task-2">
+        <div class="envelope-shell">
+          <button type="button" class="envelope" data-task="task-2" aria-label="Open Task Two" disabled>
+            <span class="wax-seal" aria-hidden="true">II</span>
+          </button>
+          <span class="task-complete-overlay" aria-hidden="true">✓</span>
+        </div>
+        <span class="envelope-label">Task Two</span>
+      </div>
+
+      <div class="envelope-wrap" data-task-id="task-3">
+        <div class="envelope-shell">
+          <button type="button" class="envelope" data-task="task-3" aria-label="Open Task Three" disabled>
+            <span class="wax-seal" aria-hidden="true">III</span>
+          </button>
+          <span class="task-complete-overlay" aria-hidden="true">✓</span>
+        </div>
+        <span class="envelope-label">Task Three</span>
+      </div>
+
+      <div class="envelope-wrap" data-task-id="task-3-5">
+        <div class="envelope-shell">
+          <button type="button" class="envelope bonus" data-task="task-3-5" aria-label="Open Bonus Round 3.5" disabled>
+            <span class="wax-seal gold" aria-hidden="true">★</span>
+          </button>
+          <span class="task-complete-overlay" aria-hidden="true">✓</span>
+        </div>
+        <span class="envelope-label bonus-label">★ Bonus Round 3.5 ★</span>
+      </div>
+
+      <div class="envelope-wrap" data-task-id="task-4">
+        <div class="envelope-shell">
+          <button type="button" class="envelope" data-task="task-4" aria-label="Open Task Four" disabled>
+            <span class="wax-seal" aria-hidden="true">IV</span>
+          </button>
+          <span class="task-complete-overlay" aria-hidden="true">✓</span>
+        </div>
+        <span class="envelope-label">Task Four</span>
+      </div>
+
+      <div class="envelope-wrap" data-task-id="task-5">
+        <div class="envelope-shell">
+          <button type="button" class="envelope" data-task="task-5" aria-label="Open Task Five" disabled>
+            <span class="wax-seal" aria-hidden="true">V</span>
+          </button>
+          <span class="task-complete-overlay" aria-hidden="true">✓</span>
+        </div>
+        <span class="envelope-label">Task Five</span>
+      </div>
+    </section>
+
+    <div class="tm-actions">
+      <a href="scoreboard.html" class="tm-btn tm-btn-primary">View Scoreboard →</a>
+    </div>
+
+  </main>
+
+  <div id="task-modal" class="task-modal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Task card">
+    <button type="button" class="tm-btn task-modal-back">← Back</button>
+    <div class="task-modal-inner">
+      <img class="task-card-image" src="" alt="" hidden>
+      <div id="task-timer" class="task-timer is-hidden" hidden aria-hidden="true">
+        <p class="task-timer-label">15-minute task timer</p>
+        <div id="task-timer-display" class="task-timer-display" aria-live="polite">15:00</div>
+        <div class="task-timer-controls">
+          <button type="button" id="task-timer-start" class="tm-btn tm-btn-primary">Start Timer</button>
+          <button type="button" id="task-timer-reset" class="tm-btn">Reset</button>
+        </div>
+      </div>
+      <div class="task-modal-actions" hidden>
+        <a href="quiz.html" id="start-quiz-btn" class="tm-btn tm-btn-gold is-hidden" hidden aria-hidden="true" tabindex="-1">Start Quiz</a>
+        <button type="button" id="task-complete-btn" class="tm-btn tm-btn-primary">Mark Task Complete ✓</button>
+        <button type="button" id="task-incomplete-btn" class="tm-btn" hidden>Mark Task Incomplete</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="scripts/taskmaster.js?v=20260611i"></script>
+</body>
+</html>
