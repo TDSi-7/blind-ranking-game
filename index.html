@@ -6,41 +6,40 @@
     <title>Jones Games</title>
     <link rel="icon" type="image/png" href="blind-ranking/assets/branding/Gemini_Generated_Image_szjltrszjltrszjl.png">
     <link rel="apple-touch-icon" href="blind-ranking/assets/branding/Gemini_Generated_Image_szjltrszjltrszjl.png">
-    <link rel="stylesheet" href="style.css?v=20260407f">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=20261118b">
 </head>
-<body>
-    <div class="home-container">
-        <header class="home-header">
-            <div class="header-spacer" aria-hidden="true"></div>
-            <div class="header-logo-wrap">
-                <img src="blind-ranking/assets/branding/Gemini_Generated_Image_szjltrszjltrszjl.png" alt="Jones Games" class="site-logo">
+<body class="hub">
+    <header class="hub-bar">
+        <div class="hub-bar-inner">
+            <a class="hub-brand" href="index.html">
+                <span class="hub-mark"><img src="blind-ranking/assets/branding/Gemini_Generated_Image_szjltrszjltrszjl.png" alt=""></span>
+                <span class="hub-brand-name">Jones Games</span>
+            </a>
+            <div id="authSection" class="hub-account">
+                <span id="authUserHint" class="hub-who" style="display: none;"></span>
+                <button type="button" id="nicknameBtn" class="hub-btn hub-btn-ghost" style="display: none;">Nickname</button>
+                <button type="button" id="authActionBtn" class="hub-btn hub-btn-dark" style="display: none;">Sign in with Google</button>
             </div>
-            <div id="authSection" class="header-auth" style="display: none;">
-                <button type="button" id="authActionBtn" class="btn-login-top" style="display: none;">Login</button>
-                <button type="button" id="nicknameBtn" class="btn-nickname" style="display: none;">Nickname</button>
-                <span id="authUserHint" class="auth-user-hint" style="display: none;"></span>
-            </div>
-        </header>
+        </div>
+    </header>
 
-        <p id="authNote" class="auth-note" style="display: none;">Create an account and log in to keep a record of your progress and appear on the daily leaderboard.</p>
-        
-        <div id="loadingMessage" class="loading-message">
-            <p>Loading games...</p>
-        </div>
-        
-        <nav class="mini-menu">
-            <a href="hall-of-fame/index.html" class="mini-menu-link">🏆 Hall of Fame</a>
-            <a href="my-stats/index.html" class="mini-menu-link">📊 Personal Records</a>
-        </nav>
-        
-        <div id="gamesContainer" class="games-container">
-            <!-- Game cards will be dynamically inserted here -->
-        </div>
-        
-        <div id="errorMessage" class="error-message" style="display: none;">
-            <p>Oops! Couldn't load games. Please refresh the page.</p>
-        </div>
-    </div>
+    <main class="hub-main">
+        <p id="authNote" class="hub-note" style="display: none;">Sign in to save scores and appear on the daily leaderboard. You can play without an account.</p>
+        <p id="loadingMessage" class="hub-loading">Loading games…</p>
+        <div id="gamesContainer"></div>
+        <p id="errorMessage" class="hub-error" style="display: none;">Couldn’t load games. Refresh the page to try again.</p>
+
+        <section class="hub-block">
+            <h2>Your scores</h2>
+            <div class="hub-scores">
+                <a class="hub-score" href="hall-of-fame/index.html"><strong>Hall of Fame</strong><span>Daily standings. Sign in to see them.</span></a>
+                <a class="hub-score" href="my-stats/index.html"><strong>Personal records</strong><span>Your best runs, on any device you sign in to.</span></a>
+            </div>
+        </section>
+    </main>
 
     <div id="nicknameModal" class="settings-modal" role="dialog" aria-labelledby="nicknameModalTitle" aria-modal="true" style="display:none;">
         <div class="settings-modal-backdrop"></div>
@@ -57,11 +56,12 @@
         </div>
     </div>
     
+    <script src="js/daily-seed.js"></script>
     <script src="js/profiles.js"></script>
     <!-- Optional: add Supabase URL + anon key in js/config.js (see js/config.example.js) -->
     <script src="js/config.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/sync.js"></script>
-    <script src="home.js?v=20260407f"></script>
+    <script src="home.js?v=20261118b"></script>
 </body>
 </html>

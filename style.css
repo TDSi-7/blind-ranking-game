@@ -1184,3 +1184,307 @@ body::before {
         display: flex;
     }
 }
+
+/* Hub — homepage and score pages */
+body.hub {
+    font-family: "Plus Jakarta Sans", "Segoe UI", sans-serif;
+    background: #f5f6f8;
+    color: #101828;
+    display: block;
+    min-height: 100vh;
+}
+body.hub .hub-bar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: rgba(255, 255, 255, 0.92);
+    border-bottom: 1px solid #eaecf0;
+    backdrop-filter: blur(12px);
+}
+body.hub .hub-bar-inner,
+body.hub .hub-main,
+body.hub .home-container.stats-page {
+    width: min(1080px, calc(100% - 40px));
+    margin: 0 auto;
+}
+body.hub .hub-bar-inner {
+    min-height: 64px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+body.hub .hub-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: inherit;
+    min-width: 0;
+}
+body.hub .hub-mark {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    border: 1px solid #eaecf0;
+    background: #fff;
+    flex: 0 0 auto;
+}
+body.hub .hub-mark img {
+    width: 70px;
+    height: 70px;
+    max-width: none;
+    object-fit: cover;
+    object-position: center 34%;
+}
+body.hub .hub-brand-name {
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    font-size: 0.95rem;
+}
+body.hub .hub-account {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+body.hub .hub-who {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #667085;
+}
+body.hub .hub-btn {
+    border-radius: 10px;
+    min-height: 40px;
+    padding: 10px 14px;
+    font: inherit;
+    font-weight: 650;
+    font-size: 0.92rem;
+    cursor: pointer;
+}
+body.hub .hub-btn-dark {
+    background: #101828;
+    color: #fff;
+    border: 0;
+}
+body.hub .hub-btn-dark:hover { background: #1d2939; }
+body.hub .hub-btn-ghost {
+    background: #fff;
+    color: #101828;
+    border: 1px solid #eaecf0;
+}
+body.hub .hub-btn-ghost:hover { background: #f9fafb; }
+body.hub .hub-btn:focus-visible,
+body.hub .hub-brand:focus-visible,
+body.hub .hub-ticket:focus-visible,
+body.hub .hub-game:focus-visible,
+body.hub .hub-event:focus-visible,
+body.hub .hub-score:focus-visible {
+    outline: 3px solid #84adff;
+    outline-offset: 2px;
+}
+body.hub .hub-main { padding: 28px 0 56px; }
+body.hub .hub-note,
+body.hub .hub-lede,
+body.hub .hub-loading {
+    color: #667085;
+    line-height: 1.5;
+}
+body.hub .hub-note { margin: 0 0 18px; font-size: 0.95rem; }
+body.hub .hub-loading { margin: 0 0 16px; }
+body.hub .hub-error {
+    background: #fef3f2;
+    color: #b42318;
+    border-radius: 12px;
+    padding: 14px 16px;
+}
+body.hub .hub-block { margin-top: 36px; }
+body.hub .hub-block:first-child { margin-top: 0; }
+body.hub h1,
+body.hub h2,
+body.hub h3 { letter-spacing: -0.03em; }
+body.hub .hub-main h1 { font-size: 2rem; margin: 0; }
+body.hub .hub-main h2 { font-size: 1.35rem; margin: 0; }
+body.hub .hub-date {
+    margin: 0 0 6px;
+    color: #667085;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+body.hub .hub-lede { margin: 8px 0 16px; max-width: 40rem; }
+body.hub .hub-today,
+body.hub .hub-shelf {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+body.hub .hub-ticket,
+body.hub .hub-game,
+body.hub .hub-event,
+body.hub .hub-score {
+    background: #fff;
+    border: 1px solid #eaecf0;
+    border-radius: 16px;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+    text-decoration: none;
+    color: inherit;
+}
+body.hub .hub-ticket:hover,
+body.hub .hub-game:hover,
+body.hub .hub-event:hover,
+body.hub .hub-score:hover { border-color: #b2ccff; }
+body.hub .hub-ticket {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 18px;
+    min-height: 220px;
+}
+body.hub .hub-ticket-top {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+body.hub .hub-ticket h3,
+body.hub .hub-game h3,
+body.hub .hub-event h3 { margin: 0; font-size: 1.12rem; }
+body.hub .hub-ticket p,
+body.hub .hub-game p,
+body.hub .hub-event p,
+body.hub .hub-score span {
+    margin: 0;
+    color: #667085;
+    line-height: 1.45;
+    font-size: 0.95rem;
+}
+body.hub .hub-status { font-size: 0.82rem; font-weight: 700; }
+body.hub .hub-status.is-open { color: #b54708; }
+body.hub .hub-status.is-done { color: #067647; }
+body.hub .hub-status::before {
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+    margin-right: 6px;
+}
+body.hub .hub-play {
+    margin-top: auto;
+    background: #101828;
+    color: #fff;
+    border-radius: 10px;
+    padding: 9px 12px;
+    font-size: 0.88rem;
+    font-weight: 700;
+}
+body.hub .hub-play.is-quiet {
+    background: #fff;
+    color: #101828;
+    border: 1px solid #eaecf0;
+}
+body.hub .hub-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.78rem;
+    letter-spacing: -0.03em;
+    flex: 0 0 auto;
+}
+body.hub .hub-icon svg { width: 22px; height: 22px; }
+body.hub .hub-icon-blue { background: #155eef; }
+body.hub .hub-icon-teal { background: #0e9384; }
+body.hub .hub-icon-red { background: #d92d20; }
+body.hub .hub-icon-amber { background: #dc6803; }
+body.hub .hub-icon-violet { background: #6938ef; }
+body.hub .hub-dots { display: flex; gap: 3px; }
+body.hub .hub-dots i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    display: block;
+    background: #fff;
+}
+body.hub .hub-dots i:nth-child(2) { opacity: 0.85; }
+body.hub .hub-dots i:nth-child(3) { opacity: 0.7; }
+body.hub .hub-dots i:nth-child(4) { opacity: 0.5; }
+body.hub .hub-creator {
+    margin: 18px 0 10px;
+    font-size: 0.82rem;
+    color: #667085;
+}
+body.hub .hub-game {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 16px;
+}
+body.hub .hub-game-copy { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+body.hub .hub-meta { color: #98a2b3; font-size: 0.8rem; font-weight: 600; }
+body.hub .hub-event {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 18px 18px 16px;
+    border-left: 3px solid #d92d20;
+}
+body.hub .hub-event .hub-play { margin-top: 0; }
+body.hub .hub-scores {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 14px;
+}
+body.hub .hub-score { display: block; padding: 16px 18px; }
+body.hub .hub-score strong { display: block; margin-bottom: 4px; font-size: 1rem; }
+body.hub .hub-empty { color: #667085; font-weight: 600; }
+body.hub .home-container.stats-page {
+    background: transparent;
+    box-shadow: none;
+    border-radius: 0;
+    padding: 28px 0 56px;
+    max-width: none;
+}
+body.hub .stats-page-logo-wrap { display: none; }
+body.hub .stats-page-title { font-size: 2rem; }
+body.hub .auth-note { text-align: left; margin: 0 0 16px; color: #667085; }
+body.hub .stats-page-header { margin-bottom: 18px; }
+body.hub .hall-of-fame-wrap,
+body.hub .account-section {
+    border-color: #eaecf0;
+    border-radius: 16px;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+@media (max-width: 860px) {
+    body.hub .hub-today,
+    body.hub .hub-shelf,
+    body.hub .hub-scores { grid-template-columns: 1fr; }
+    body.hub .hub-event { flex-direction: column; align-items: flex-start; }
+    body.hub .hub-main h1,
+    body.hub .stats-page-title { font-size: 1.7rem; }
+    body.hub .hub-bar-inner,
+    body.hub .hub-main,
+    body.hub .home-container.stats-page { width: min(1080px, calc(100% - 28px)); }
+}
+@media (max-width: 640px) {
+    body.hub .hub-bar { position: static; }
+    body.hub .hub-bar-inner {
+        min-height: 0;
+        padding: 12px 0;
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+    body.hub .hub-account { margin-left: 0; }
+}

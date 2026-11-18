@@ -18,6 +18,8 @@ document.addEventListener('DOMContentLoaded', function () {
     /** Bump when games.json changes so CDN/browsers fetch the new catalog. */
     var GAMES_CATALOG_VERSION = '20260611tm';
     var isLoggedIn = false;
+    var currentUserId = null;
+    var loadedGames = null;
 
     function escapeHtml(s) {
         var div = document.createElement('div');
@@ -36,15 +38,16 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!authSection || !authActionBtn) return;
         authSection.style.display = 'flex';
         isLoggedIn = !!(session && session.user);
+        currentUserId = isLoggedIn ? session.user.id : null;
         if (isLoggedIn) {
             var meta = session.user.user_metadata || {};
             var name = meta.full_name || meta.name || session.user.email || 'Player';
-            authActionBtn.textContent = 'Logout';
+            authActionBtn.textContent = 'Sign out';
             authActionBtn.style.display = 'inline-flex';
             if (nicknameBtn) nicknameBtn.style.display = 'inline-flex';
             if (authUserHint) {
-                authUserHint.textContent = 'Logged in as ' + name;
-                authUserHint.style.display = 'inline-block';
+                authUserHint.textContent = name;
+                authUserHint.style.display = 'inline';
             }
             if (authNote) authNote.style.display = 'none';
             if (window.JonesGamesSync && window.JonesGamesSync.syncWithServer) {
@@ -52,14 +55,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (window.JonesGamesSync.getProfile && authUserHint) {
                         window.JonesGamesSync.getProfile().then(function (profile) {
                             if (profile && profile.display_name) {
-                                authUserHint.textContent = 'Logged in as ' + profile.display_name;
+                                authUserHint.textContent = profile.display_name;
                             }
                         });
                     }
                 });
             }
         } else {
-            authActionBtn.textContent = 'Login';
+            authActionBtn.textContent = 'Sign in with Google';
             authActionBtn.style.display = Auth && Auth.isConfigured && Auth.isConfigured() ? 'inline-flex' : 'none';
             if (nicknameBtn) nicknameBtn.style.display = 'none';
             if (authUserHint) {
@@ -94,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var nickname = nicknameInput ? nicknameInput.value.trim() : '';
         window.JonesGamesSync.updateProfile({ display_name: nickname || 'Player' })
             .then(function () {
-                if (authUserHint) authUserHint.textContent = 'Logged in as ' + (nickname || 'Player');
+                if (authUserHint) authUserHint.textContent = nickname || 'Player';
                 closeNicknameModal();
             })
             .catch(function (err) {
@@ -142,90 +145,114 @@ document.addEventListener('DOMContentLoaded', function () {
         return sections;
     }
 
-    function buildRail(title, sectionClass, games, railLogo) {
-        var cards = (games || []).map(function (game) {
-            return createGameCard(game);
-        }).join('');
-        cards += createComingSoonCard();
-        if (!cards) cards = '<p class="empty-rail-note">More games coming soon.</p>';
-        var railHeading = '<h2 class="rail-title">' + escapeHtml(title) + '</h2>';
-        if (railLogo && railLogo.src) {
-            railHeading = '<div class="rail-title-wrap">' +
-                '<h2 class="rail-title">' + escapeHtml(title) + '</h2>' +
-                '<img class="rail-title-logo" src="' + escapeHtml(railLogo.src) + '" alt="' + escapeHtml(railLogo.alt || title) + '">' +
-                '</div>';
+    var CHALLENGE_IDS = {
+        'daily-challenge': 'blind_ranking',
+        'daily-higher-or-lower': 'higher_or_lower',
+        'daily-codebreaker': 'codebreaker'
+    };
+
+    var DAILY_TITLES = {
+        'daily-challenge': 'Blind Rank',
+        'daily-higher-or-lower': 'Higher or Lower',
+        'daily-codebreaker': 'Codebreaker'
+    };
+
+    function todayLabel() {
+        var Seed = window.JonesGamesDailySeed;
+        if (Seed && Seed.getTodayDateUTC && Seed.formatDisplayDateUTC) {
+            return Seed.formatDisplayDateUTC(Seed.getTodayDateUTC());
         }
-        return '<section class="game-rail-section ' + sectionClass + '">' +
-            railHeading +
-            '<div class="game-rail-outer">' +
-            '<span class="game-rail-scroll-hint game-rail-scroll-hint--left" aria-hidden="true">◀</span>' +
-            '<div class="game-rail" role="region" aria-label="' + escapeHtml(title) + '">' + cards + '</div>' +
-            '<span class="game-rail-scroll-hint game-rail-scroll-hint--right" aria-hidden="true">▶</span>' +
-            '</div>' +
-            '</section>';
+        return '';
+    }
+
+    function playedToday(game) {
+        var challengeId = CHALLENGE_IDS[game.id];
+        if (!currentUserId || !challengeId || !window.JonesGamesDailySeed) return false;
+        var today = window.JonesGamesDailySeed.getTodayDateUTC();
+        try {
+            var map = JSON.parse(localStorage.getItem('daily_challenge_attempt_lock_v2') || '{}');
+            return !!(map[currentUserId] && map[currentUserId][challengeId] && map[currentUserId][challengeId][today]);
+        } catch (e) {
+            return false;
+        }
+    }
+
+    function markFor(game) {
+        var id = game.id || '';
+        if (id === 'daily-challenge' || id === 'blind-ranking') return { tone: 'blue', html: '1–10' };
+        if (id.indexOf('higher') >= 0) return { tone: 'teal', html: 'A♠' };
+        if (id.indexOf('code') >= 0) return { tone: 'violet', html: '<span class="hub-dots"><i></i><i></i><i></i><i></i></span>' };
+        if (id.indexOf('player') >= 0 || id.indexOf('lfc') >= 0) return { tone: 'red', html: 'CF' };
+        if (id.indexOf('chess') >= 0 || id.indexOf('mimi') >= 0) return { tone: 'amber', html: '<svg viewBox="0 0 46 54" aria-hidden="true"><circle cx="23" cy="12" r="8" fill="#fff"/><path fill="#fff" d="M14 26c2-6 16-6 18 0 3 2 6 6 6 10H8c0-4 3-8 6-10z"/><rect x="8" y="44" width="30" height="6" rx="2" fill="#fff"/></svg>' };
+        return { tone: 'blue', html: escapeHtml((game.name || 'G').charAt(0)) };
+    }
+
+    function difficultyLine(game) {
+        var levels = game.difficultyLevels || [];
+        if (!levels.length) return '';
+        return levels.join(', ');
     }
 
     function renderGames(games) {
         if (!gamesContainer) return;
         if (!games || games.length === 0) {
-            gamesContainer.innerHTML = '<p class="empty-rail-note">No games available yet. Check back soon.</p>';
+            gamesContainer.innerHTML = '<p class="hub-empty">No games available yet. Check back soon.</p>';
             return;
         }
         var grouped = partitionGames(games);
-        var railLogos = {
-            alex: {
-                src: 'blind-ranking/assets/branding/Alex%27s%20Games%20Logo.png',
-                alt: 'Alex\'s Games Logo'
-            },
-            mimi: {
-                src: 'blind-ranking/assets/branding/Mimi%27s%20Games%20Logo.png',
-                alt: 'Mimi\'s Games Logo'
-            },
-            daily: {
-                src: 'blind-ranking/assets/branding/Daily%20challenge%20logo.png',
-                alt: 'Daily Challenge Logo'
-            }
-        };
-        var rails = [
-            buildRail('Games by Alex', 'rail-alex', grouped.alex, railLogos.alex),
-            buildRail('Games by Mimi', 'rail-mimi', grouped.mimi, railLogos.mimi)
-        ];
-        if (grouped.simon.length) {
-            rails.push(buildRail('Special Events', 'rail-simon', grouped.simon, null));
+        var html = '';
+        if (grouped.daily.length) {
+            html += '<section class="hub-block">' +
+                '<p class="hub-date">' + escapeHtml(todayLabel()) + '</p>' +
+                '<h1>Today</h1>' +
+                '<p class="hub-lede">The same puzzles for everyone.</p>' +
+                '<div class="hub-today">' + grouped.daily.map(createDailyCard).join('') + '</div>' +
+                '</section>';
         }
-        rails.push(buildRail('Daily Challenges', 'rail-daily', grouped.daily, railLogos.daily));
-        gamesContainer.innerHTML = rails.join('');
+        var practice = '';
+        if (grouped.alex.length) {
+            practice += '<h3 class="hub-creator">Alex</h3><div class="hub-shelf">' + grouped.alex.map(createPlayCard).join('') + '</div>';
+        }
+        if (grouped.mimi.length) {
+            practice += '<h3 class="hub-creator">Mimi</h3><div class="hub-shelf">' + grouped.mimi.map(createPlayCard).join('') + '</div>';
+        }
+        if (practice) {
+            html += '<section class="hub-block"><h2>Play anytime</h2><p class="hub-lede">Practice whenever you like. Pick a difficulty inside. No account needed.</p>' + practice + '</section>';
+        }
+        if (grouped.simon.length) {
+            html += '<section class="hub-block"><h2>On now</h2>' + grouped.simon.map(createEventCard).join('') + '</section>';
+        }
+        gamesContainer.innerHTML = html;
     }
 
-    function createGameCard(game) {
-        var difficultyBadges = (game.difficultyLevels || []).map(function (level) {
-            var levelLower = String(level || '').toLowerCase();
-            return '<span class="difficulty-badge ' + levelLower + '">' + escapeHtml(level) + '</span>';
-        }).join('');
-        if (game.freePlay) {
-            difficultyBadges = '<span class="difficulty-badge free-play">Free Play</span>' + difficultyBadges;
-        } else if (game.dailyChallenge || game.id === 'daily-challenge') {
-            difficultyBadges = '<span class="difficulty-badge daily">Daily</span>' + difficultyBadges;
-        }
-        var cardColor = game.color || '#2196F3';
-        return '<a href="' + getGameUrl(game) + '" class="game-card" style="--card-color: ' + cardColor + '">' +
-            '<div class="game-icon">' + (game.icon || '🎮') + '</div>' +
-            '<h3 class="game-name">' + escapeHtml(game.name) + '</h3>' +
-            '<p class="game-description">' + escapeHtml(game.description) + '</p>' +
-            '<div class="game-meta">' +
-            '<span class="game-age-range">Ages ' + escapeHtml(game.ageRange || '') + '</span>' +
-            '<div class="game-difficulties">' + difficultyBadges + '</div>' +
-            '</div>' +
+    function createDailyCard(game) {
+        var mark = markFor(game);
+        var done = playedToday(game);
+        var title = DAILY_TITLES[game.id] || game.name;
+        return '<a class="hub-ticket" href="' + getGameUrl(game) + '">' +
+            '<span class="hub-ticket-top"><span class="hub-icon hub-icon-' + mark.tone + '">' + mark.html + '</span>' +
+            '<span class="hub-status ' + (done ? 'is-done' : 'is-open') + '">' + (done ? 'Played' : 'Still open') + '</span></span>' +
+            '<h3>' + escapeHtml(title) + '</h3>' +
+            '<p>' + escapeHtml(game.description || '') + '</p>' +
+            '<span class="hub-play' + (done ? ' is-quiet' : '') + '">' + (done ? 'See result' : 'Play') + '</span>' +
             '</a>';
     }
 
-    function createComingSoonCard() {
-        return '<article class="game-card game-card-coming-soon">' +
-            '<div class="game-icon">✨</div>' +
-            '<h3 class="game-name">Coming Soon</h3>' +
-            '<p class="game-description">A brand new game is being built for this section.</p>' +
-            '<div class="game-meta"><span class="game-age-range">Stay Tuned</span></div>' +
-            '</article>';
+    function createPlayCard(game) {
+        var mark = markFor(game);
+        var meta = difficultyLine(game);
+        return '<a class="hub-game" href="' + getGameUrl(game) + '">' +
+            '<span class="hub-icon hub-icon-' + mark.tone + '">' + mark.html + '</span>' +
+            '<span class="hub-game-copy"><h3>' + escapeHtml(game.name) + '</h3>' +
+            '<p>' + escapeHtml(game.description || '') + '</p>' +
+            (meta ? '<span class="hub-meta">' + escapeHtml(meta) + '</span>' : '') +
+            '</span></a>';
+    }
+
+    function createEventCard(game) {
+        return '<a class="hub-event" href="' + getGameUrl(game) + '">' +
+            '<span><h3>' + escapeHtml(game.name) + '</h3><p>' + escapeHtml(game.description || '') + '</p></span>' +
+            '<span class="hub-play">Enter</span></a>';
     }
 
     if (authActionBtn) {
@@ -249,10 +276,14 @@ document.addEventListener('DOMContentLoaded', function () {
     if (Auth) {
         (window.__JonesGamesAuthInit__ || (function () { return Promise.resolve(); }))()
             .then(function () { return Auth.getSession(); })
-            .then(function (session) { renderAuth(session || null); })
+            .then(function (session) {
+                renderAuth(session || null);
+                if (loadedGames) renderGames(loadedGames);
+            })
             .catch(function () { renderAuth(null); });
         Auth.onAuthStateChange(function (session) {
             renderAuth(session || null);
+            if (loadedGames) renderGames(loadedGames);
         });
     }
 
@@ -263,7 +294,8 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(function (data) {
             if (loadingMessage) loadingMessage.style.display = 'none';
-            renderGames(data.games || []);
+            loadedGames = data.games || [];
+            renderGames(loadedGames);
         })
         .catch(function (error) {
             console.error('Error loading games:', error);
